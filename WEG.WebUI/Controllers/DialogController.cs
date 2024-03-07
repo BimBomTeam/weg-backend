@@ -19,6 +19,7 @@ namespace WEG.Server.Controllers
         {
             var response = dialogService.GetDialogResponse(request);
             return Ok(response);
+            //cos
         }
     }
 }
