@@ -13,11 +13,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<UsersContext>(options => options.UseSqlServer(
+builder.Services.AddDbContext<UsersContext>(options => options.UseNpgsql(
     builder.Configuration.GetConnectionString("DefaultConnection"),
-    sqlServerOptions =>
+    npgsqlOptions =>
     {
-        sqlServerOptions.EnableRetryOnFailure();
+        npgsqlOptions.EnableRetryOnFailure();
     }
 ));
 
