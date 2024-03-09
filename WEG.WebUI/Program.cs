@@ -2,6 +2,7 @@ using WEG.Infrastructure.Services;
 using WEG.Application.Services;
 using Microsoft.AspNetCore.Identity;
 using WEG.Domain.DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,14 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<UsersContext>(options => options.UseSqlServer(
+    builder.Configuration.GetConnectionString("DefaultConnection"),
+    sqlServerOptions =>
+    {
+        sqlServerOptions.EnableRetryOnFailure();
+    }
+));
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<UsersContext>();
