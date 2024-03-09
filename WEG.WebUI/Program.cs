@@ -1,5 +1,6 @@
 using WEG.Infrastructure.Services;
 using WEG.Application.Services;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
