@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace WEG.Domain.DataAccess
 {
-    public class UsersContext : IdentityDbContext
+    public class UsersContext : IdentityDbContext<IdentityUser>
     {
         public UsersContext(DbContextOptions options) : base(options) { }
 
