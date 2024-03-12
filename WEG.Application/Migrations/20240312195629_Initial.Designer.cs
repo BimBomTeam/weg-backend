@@ -12,8 +12,8 @@ using WEG.Domain.DataAccess;
 namespace WEG.Application.Migrations
 {
     [DbContext(typeof(UsersContext))]
-    [Migration("20240309184955_AddingIdentity")]
-    partial class AddingIdentity
+    [Migration("20240312195629_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
