@@ -4,13 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using WEG.Domain.DataAccess;
 
 #nullable disable
 
 namespace WEG.Application.Migrations
 {
-    [DbContext(typeof(UsersContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     partial class UsersContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

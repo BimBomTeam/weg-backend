@@ -1,11 +1,11 @@
 using WEG.Infrastructure.Services;
 using WEG.Application.Services;
 using Microsoft.AspNetCore.Identity;
-using WEG.Domain.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using WEG.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -17,7 +17,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<UsersContext>(options => options.UseNpgsql(
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(
     builder.Configuration.GetConnectionString("DefaultConnection"),
     npgsqlOptions =>
     {
@@ -27,7 +27,7 @@ builder.Services.AddDbContext<UsersContext>(options => options.UseNpgsql(
 
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<UsersContext>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
 builder.Services.AddAuthentication(options =>
@@ -56,9 +56,9 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddTransient<IDialogService, DialogService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
-
 
 var app = builder.Build();
 

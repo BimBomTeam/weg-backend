@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WEG.Application.Resources.Models
+namespace WEG.Infrastructure.Models
 {
     public class LoginModel
     {

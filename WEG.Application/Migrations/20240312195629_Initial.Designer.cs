@@ -5,13 +5,12 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using WEG.Domain.DataAccess;
 
 #nullable disable
 
 namespace WEG.Application.Migrations
 {
-    [DbContext(typeof(UsersContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     [Migration("20240312195629_Initial")]
     partial class Initial
     {

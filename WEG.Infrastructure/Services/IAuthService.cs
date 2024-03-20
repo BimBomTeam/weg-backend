@@ -1,10 +1,9 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
-using WEG.Application.Resources.Models;
+using WEG.Infrastructure.Models;
 
-
-namespace WEG.Application.Services
+namespace WEG.Infrastructure.Services
 {
     public interface IAuthService
     {

@@ -4,7 +4,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using WEG.Application.Resources.Models;
+using WEG.Application.Claims;
+using WEG.Infrastructure.Models;
+using WEG.Infrastructure.Services;
 
 
 namespace WEG.Application.Services
@@ -17,7 +19,6 @@ namespace WEG.Application.Services
         {
             _userManager = userManager;
             _configuration = configuration;
-
         }
 
         public async Task<IdentityResult> RegisterAsync(RegisterModel model)
