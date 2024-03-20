@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using WEG.Infrastructure.Models;
-using WEG.Application.Services;
+using WEG.Infrastructure.Services;
 
 namespace WEG_Server.Controllers
 {
@@ -13,9 +9,9 @@ namespace WEG_Server.Controllers
     [Route("api/[controller]")]
     public class AuthenticateController : ControllerBase
     {
-        private readonly AuthService _authService;
+        private readonly IAuthService _authService;
 
-        public AuthenticateController(AuthService getTokenService)
+        public AuthenticateController(IAuthService getTokenService)
         {
             _authService = getTokenService;
         }
