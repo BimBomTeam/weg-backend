@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WEG.Infrastructure.Services;
 using WEG.Infrastructure.Dto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WEG.Server.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class DialogController : Controller
