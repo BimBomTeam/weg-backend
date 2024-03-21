@@ -24,6 +24,9 @@ namespace WEG_Server.Controllers
             {
                 var token = await _authService.LoginAsync(model);
 
+                if (token == null)
+                    return Unauthorized("Invalid credentials");
+
                 return Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),
