@@ -10,5 +10,6 @@ namespace WEG.Domain.Entities
     {
         public const string Admin = "Admin";
         public const string User = "User";
+        public const string NPC = "NPC";
     }
 }
