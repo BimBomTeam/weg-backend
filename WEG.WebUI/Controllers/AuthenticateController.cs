@@ -31,9 +31,11 @@ namespace WEG_Server.Controllers
         {
             try
             {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                await _userManager.UpdateAsync(user);
                 var token = await _authService.LoginTokenAsync(model);
                 var refreshToken = await _authService.LoginTokenRefreshAsync(model);
-                if (token == null)
+                if (token == null || refreshToken==null)
                 {
                     return Unauthorized();
                 }
@@ -67,20 +69,7 @@ namespace WEG_Server.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpPost]
-        [Route("refresh-token")]
-        public async Task<IActionResult> RefreshToken(TokenModel tokenModel)
-        {
-            try
-            {
-                return await _authService.RefreshTokenAsync(tokenModel);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-        }
+      
         [Authorize]
         [HttpPost]
         [Route("revoke/{username}")]

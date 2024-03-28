@@ -10,8 +10,8 @@ namespace WEG.Infrastructure.Services
     {
         Task<IdentityResult> RegisterAsync(RegisterModel model);
         Task<JwtSecurityToken?> LoginTokenAsync(LoginModel model);
-        Task<string?> LoginTokenRefreshAsync(LoginModel model);
+        Task<string> LoginTokenRefreshAsync(LoginModel model);
         JwtSecurityToken GetToken(List<Claim> authClaims);
-        Task<IActionResult> RefreshTokenAsync(TokenModel tokenModel);
+      
     }
 }

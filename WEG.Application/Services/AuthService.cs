@@ -43,7 +43,7 @@ namespace WEG.Application.Services
         }
         public async Task<JwtSecurityToken?> LoginTokenAsync(LoginModel model)
         {
-            var user = await _userManager.FindByNameAsync(model.Email);
+            var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null || !(await _userManager.CheckPasswordAsync(user, model.Password)))
             {
                 return null;
@@ -67,32 +67,52 @@ namespace WEG.Application.Services
         }
         public async Task<string> LoginTokenRefreshAsync(LoginModel model)
         {
-            var user = await _userManager.FindByNameAsync(model.Email);
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || !(await _userManager.CheckPasswordAsync(user, model.Password)))
+            {
+                return null;
+            }
+
+            // Generate refresh token securely
             var refreshToken = GenerateRefreshToken();
 
-            _ = int.TryParse(_configuration["JWT:RefreshTokenValidityInDays"], out int refreshTokenValidityInDays);
+            // Retrieve refresh token validity from configuration
+            if (!int.TryParse(_configuration["JWT:RefreshTokenValidityInDays"], out int refreshTokenValidityInDays))
+            {
+                // Handle configuration parse error
+                throw new InvalidOperationException("Invalid configuration for JWT:RefreshTokenValidityInDays");
+            }
 
+            // Set refresh token and expiry time
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(refreshTokenValidityInDays);
 
-            await _userManager.UpdateAsync(user);
+            // Update user
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                // Handle user update failure
+                throw new InvalidOperationException($"Failed to update user: {result.Errors.FirstOrDefault()?.Description}");
+            }
+
             return refreshToken;
         }
-            public JwtSecurityToken GetToken(List<Claim> authClaims)
+
+        public JwtSecurityToken GetToken(List<Claim> authClaims)
         {
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["JWT:ValidIssuer"],
                 audience: _configuration["JWT:ValidAudience"],
-                expires: DateTime.Now.AddMinutes(1),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                 );
 
             return token;
         }
-
+        [HttpPost]
+        [Route("refresh-token")]
         public async Task<IActionResult> RefreshTokenAsync(TokenModel tokenModel)
         {
             if (tokenModel is null)
