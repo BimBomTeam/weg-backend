@@ -62,6 +62,7 @@ namespace WEG.Application.Services
                 authClaims.Add(new Claim(ClaimTypes.Role, userRole));
             }
 
+
             var token = GetToken(authClaims);
             return token;
         }
@@ -101,10 +102,12 @@ namespace WEG.Application.Services
         public JwtSecurityToken GetToken(List<Claim> authClaims)
         {
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+            _ = int.TryParse(_configuration["JWT:TokenValidityInMinutes"], out int tokenValidityInMinutes);
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["JWT:ValidIssuer"],
                 audience: _configuration["JWT:ValidAudience"],
+                expires: DateTime.UtcNow.AddMinutes(3),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                 );
@@ -155,7 +158,7 @@ namespace WEG.Application.Services
             });
         }
 
-        private static string GenerateRefreshToken()
+        public static string GenerateRefreshToken()
         {
             var randomNumber = new byte[64];
             using var rng = RandomNumberGenerator.Create();
