@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IdentityModel.Tokens.Jwt;
 
 namespace WEG.Infrastructure.Models
 {
     public class TokenModel
     {
-        public string? AccessToken { get; set; }
+        public JwtSecurityToken? AccessToken { get; set; }
         public string? RefreshToken { get; set; }
     }
 }

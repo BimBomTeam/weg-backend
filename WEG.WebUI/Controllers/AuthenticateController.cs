@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using WEG.Domain.Entities;
+using WEG.Infrastructure.Dto;
 using WEG.Infrastructure.Models;
 using WEG.Infrastructure.Services;
 
@@ -25,29 +26,28 @@ namespace WEG_Server.Controllers
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-
-            var user = await _userManager.FindByEmailAsync(model.Email);
-
-            var token = await _authService.LoginTokenAsync(model);
-
-            var refreshToken = await _authService.LoginTokenRefreshAsync(model);
-            if (token == null)
+            try
             {
-                return Unauthorized();
+                var tokens = await _authService.LoginAsync(model);
+
+                if (tokens == null)
+                {
+                    return BadRequest("Bad credentials");
+                }
+
+                return Ok(new
+                {
+                    Token = new JwtSecurityTokenHandler().WriteToken(tokens?.AccessToken),
+                    RefreshToken = tokens?.RefreshToken,
+                    Expiration = tokens.AccessToken?.ValidTo
+                });
             }
-
-            await _userManager.UpdateAsync(user);
-
-            return Ok(new
+            catch (Exception ex)
             {
-                Token = new JwtSecurityTokenHandler().WriteToken(token),
-                RefreshToken = refreshToken,
-                Expiration = token.ValidTo
-            });
-
-
-
+                return BadRequest(ex.Message);
+            }
         }
+
         [HttpPost]
         [Route("logout")]
         public async Task<IActionResult> Logout([FromBody] LoginModel model)
@@ -78,6 +78,25 @@ namespace WEG_Server.Controllers
                     return StatusCode(StatusCodes.Status500InternalServerError);
 
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("refresh")] 
+        public async Task<IActionResult> Refresh([FromBody] TokensDto dto)
+        {
+            try
+            {
+                if (dto == null || dto.AccessToken == null || dto.RefreshToken == null)
+                    return BadRequest("Tokens are null");
+
+                var tokens = await _authService.RefreshTokenAsync(dto);
+
+                return Ok(tokens);
             }
             catch (Exception ex)
             {
