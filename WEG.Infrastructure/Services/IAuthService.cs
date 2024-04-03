@@ -12,6 +12,7 @@ namespace WEG.Infrastructure.Services
         Task<JwtSecurityToken?> LoginTokenAsync(LoginModel model);
         Task<string> LoginTokenRefreshAsync(LoginModel model);
         JwtSecurityToken GetToken(List<Claim> authClaims);
-      
+        Task<JwtSecurityToken?> LogoutAsync(LoginModel model);
+
     }
 }
