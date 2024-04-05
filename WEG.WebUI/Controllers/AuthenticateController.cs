@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using WEG.Domain.Entities;
@@ -13,12 +16,10 @@ namespace WEG_Server.Controllers
     public class AuthenticateController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AuthenticateController(IAuthService getTokenService, UserManager<ApplicationUser> userManager)
+        public AuthenticateController(IAuthService getTokenService)
         {
             _authService = getTokenService;
-            _userManager = userManager;
         }
 
 
@@ -49,17 +50,20 @@ namespace WEG_Server.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [Route("logout")]
-        public async Task<IActionResult> Logout([FromBody] LoginModel model)
+        public async Task<IActionResult> Logout()
         {
             try
             {
-                var token = await _authService.LogoutAsync(model);
+                string? token = await HttpContext.GetTokenAsync(JwtBearerDefaults.AuthenticationScheme, "access_token");
 
-                return Ok(new
-                {
-                    Token = new JwtSecurityTokenHandler().WriteToken(token),
-                });
+                if (token == null)
+                    return Unauthorized();
+
+                await _authService.LogoutAsync(token);
+
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -86,7 +90,7 @@ namespace WEG_Server.Controllers
         }
 
         [HttpPost]
-        [Route("refresh")] 
+        [Route("refresh")]
         public async Task<IActionResult> Refresh([FromBody] TokensDto dto)
         {
             try
