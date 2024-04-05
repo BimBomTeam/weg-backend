@@ -36,6 +36,9 @@ namespace WEG_Server.Controllers
                     return BadRequest("Bad credentials");
                 }
 
+                if (token == null)
+                    return Unauthorized("Invalid credentials");
+
                 return Ok(new
                 {
                     Token = new JwtSecurityTokenHandler().WriteToken(tokens?.AccessToken),

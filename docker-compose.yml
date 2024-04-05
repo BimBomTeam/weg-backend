@@ -1,8 +1,0 @@
-version: '3.4'
-
-services:
-  weg.webui:
-    image: ${DOCKER_REGISTRY-}wegwebui
-    build:
-      context: .
-      dockerfile: WEG.WebUI\Dockerfile
