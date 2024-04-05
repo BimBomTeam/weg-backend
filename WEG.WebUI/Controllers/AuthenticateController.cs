@@ -32,11 +32,6 @@ namespace WEG_Server.Controllers
                 var tokens = await _authService.LoginAsync(model);
 
                 if (tokens == null)
-                {
-                    return BadRequest("Bad credentials");
-                }
-
-                if (token == null)
                     return Unauthorized("Invalid credentials");
 
                 return Ok(new
