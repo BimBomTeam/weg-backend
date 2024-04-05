@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WEG.Domain\WEG.Domain.csproj" />
     <ProjectReference Include="..\WEG.Infrastructure\WEG.Infrastructure.csproj" />
   </ItemGroup>
 
