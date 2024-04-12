@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "WEG.Application": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

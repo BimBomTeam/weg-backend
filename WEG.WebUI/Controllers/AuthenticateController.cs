@@ -16,10 +16,12 @@ namespace WEG_Server.Controllers
     public class AuthenticateController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly ILogger<AuthenticateController> _logger;
 
-        public AuthenticateController(IAuthService getTokenService)
+        public AuthenticateController(IAuthService getTokenService,ILogger<AuthenticateController>  logger)
         {
             _authService = getTokenService;
+            this._logger = logger;
         }
 
 
@@ -33,6 +35,7 @@ namespace WEG_Server.Controllers
 
                 if (tokens == null)
                     return Unauthorized("Invalid credentials");
+                _logger.LogInformation("User logged " + tokens);
 
                 return Ok(new
                 {
@@ -43,6 +46,7 @@ namespace WEG_Server.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error during login user" + DateTime.Now + ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -60,11 +64,13 @@ namespace WEG_Server.Controllers
                     return Unauthorized();
 
                 await _authService.LogoutAsync(token);
+                _logger.LogInformation("Users logout" + DateTime.Now);
 
                 return Ok();
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error logout user " + DateTime.Now + ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -78,11 +84,13 @@ namespace WEG_Server.Controllers
                 var result = await _authService.RegisterAsync(model);
                 if (!result.Succeeded)
                     return StatusCode(StatusCodes.Status500InternalServerError);
+                _logger.LogInformation("User registered  " + DateTime.Now);
 
                 return Ok();
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error during registration " + DateTime.Now + ex);
                 return BadRequest(ex.Message);
             }
         }
@@ -97,11 +105,12 @@ namespace WEG_Server.Controllers
                     return BadRequest("Tokens are null");
 
                 var tokens = await _authService.RefreshTokenAsync(dto);
-
+                _logger.LogInformation("Tokens refresh  " + DateTime.Now);
                 return Ok(tokens);
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error during refresh " + DateTime.Now + ex);
                 return BadRequest(ex.Message);
             }
         }
