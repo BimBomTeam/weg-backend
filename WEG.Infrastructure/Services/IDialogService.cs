@@ -1,4 +1,4 @@
-﻿using WEG.Infrastructure.Dto;
+﻿using WEG.Infrastructure.Dto.Dialog;
 
 namespace WEG.Infrastructure.Services
 {

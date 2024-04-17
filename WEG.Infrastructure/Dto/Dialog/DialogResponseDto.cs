@@ -1,4 +1,4 @@
-﻿namespace WEG.Infrastructure.Dto
+﻿namespace WEG.Infrastructure.Dto.Dialog
 {
     public class DialogResponseDto
     {
