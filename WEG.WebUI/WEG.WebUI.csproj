@@ -19,6 +19,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0" />
+    <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
@@ -26,6 +27,10 @@
     <ProjectReference Include="..\WEG.Application\WEG.Application.csproj" />
     <ProjectReference Include="..\WEG.Domain\WEG.Domain.csproj" />
     <ProjectReference Include="..\WEG.Infrastructure\WEG.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Logs\" />
   </ItemGroup>
 
 </Project>
