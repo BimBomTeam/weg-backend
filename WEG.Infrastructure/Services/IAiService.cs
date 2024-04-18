@@ -3,5 +3,8 @@
     public interface IAiService
     {
         string DevelopMessageByAi(string message);
+        
+        //List<string> GetRoles();
+
     }
 }

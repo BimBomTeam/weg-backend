@@ -8,5 +8,11 @@ namespace WEG.Application.Services
         {
             return "Hello world";
         }
+        // ma byc zwracane 5 ról
+
+        /*GetRoles()
+        {
+            return GRPC.Get();
+        }*/
     }
 }
