@@ -1,0 +1,5 @@
+{
+  "generate-words-prompt": "Generate JSON (array of strings) with 5 words relevant to the role of a {1} at an English level of {0}. Expected output format: {\"words\": [\"word1\", \"word2\", \"word3\", \"word4\", \"word5\"]}",
+  "start-chat-prompt": "Begin an interactive dialogue where you adopts the role of a {1}. The AI will start by addressing a typical situation in their role. You have to create perfect conditions for me to use such words {2}. The dialogue should evolve naturally, with both parties maintaining their roles, thus providing a dynamic and realistic interaction suitable for a {0} level English language learner.",
+  "get-mistakes-prompt": "Generate a json where explain me only my mistakies that I provided in this dialogue. Expected format: [{\"error\": \"error_type\", \"sentense\": \"My sentense\", \"correct\": \"Corrected version\", \"description\": \"describe shortly using rules\"}]. Ignore sentences that are correct"
+}
