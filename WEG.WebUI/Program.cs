@@ -7,6 +7,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using WEG.Application;
 using WEG.Domain.Entities;
+using Hangfire;
+using Hangfire.Redis.StackExchange;
+using WEG_Server.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -62,6 +65,15 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<IDialogService, DialogService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
+
+//Hangfire
+
+builder.Services.AddHangfire(cfg =>
+cfg.UseRedisStorage(
+    builder.Configuration.GetConnectionString("HangfireConnection")
+));
+builder.Services.AddHangfireServer();
+
 
 var app = builder.Build();
 
