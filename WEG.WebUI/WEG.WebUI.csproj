@@ -8,6 +8,7 @@
     <UserSecretsId>ea904c0e-52ba-4c5d-bdf1-4140962ab705</UserSecretsId>
     <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+    <Configurations>Debug;Release;Production</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

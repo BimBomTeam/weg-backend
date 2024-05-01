@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WEG.Domain.Entities
+namespace WEG.Domain
 {
     public class UserRoles
     {

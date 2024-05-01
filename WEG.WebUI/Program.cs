@@ -51,13 +51,14 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = configuration["JWT:ValidAudience"],
         ValidIssuer = configuration["JWT:ValidIssuer"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"])),
-        ClockSkew=TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero
     };
 });
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors();
 
 builder.Services.AddTransient<IDialogService, DialogService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
@@ -74,6 +75,13 @@ var app = builder.Build();
 var loggerFactory = app.Services.GetService<ILoggerFactory>();
 loggerFactory.AddFile(builder.Configuration["Logging:LogFilePath"].ToString());
 
+
+app.UseCors(x => x
+   .AllowAnyMethod()
+   .AllowAnyHeader()
+   .SetIsOriginAllowed(origin => true) // allow any origin
+                                       //.WithOrigins("https://localhost:44351")); // Allow only this origin can also have multiple origins separated with comma
+   .AllowCredentials()); // allow credentials
 
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
