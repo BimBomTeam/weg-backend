@@ -20,11 +20,12 @@ namespace WEG.Server.Controllers
             this._logger = logger;
         }
         [HttpPost(Name = "get-response")]
-        public async Task<IActionResult> GetResponse([FromBody] DialogRequestDto request)
+        public async Task<IActionResult> GetResponse([FromBody] DialogResponseDevelopedAiDto request)
         {
             var response = dialogService.GetDialogResponse(request);
             _logger.LogInformation("Sent response " + DateTime.Now);
             return Ok(response);
         }
+
     }
 }

@@ -4,6 +4,7 @@ namespace WEG.Infrastructure.Services
 {
     public interface IDialogService
     {
-        DialogResponseDto GetDialogResponse(DialogRequestDto requestDto);
+        DialogResponseDto GetMessageFrom(DialogRequestDto message);
+        DialogResponseDevelopedAiDto GetDialogResponse(DialogResponseDevelopedAiDto requestDto);
     }
 }
