@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using WEG.Infrastructure.Dto;
+using WEG.Infrastructure.Dto.Dialog;
 using WEG.Infrastructure.Services;
 
 namespace WEG.Application.Services
