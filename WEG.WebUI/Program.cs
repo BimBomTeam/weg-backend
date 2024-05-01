@@ -62,6 +62,13 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<IDialogService, DialogService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<IAiService, AiService>();
+builder.Services.AddTransient<IAiCommunicationService, AiCommunicationService>();
+
+var config = new ConfigurationBuilder()
+    .AddUserSecrets<Program>()
+    .Build();
+
 
 var app = builder.Build();
 
