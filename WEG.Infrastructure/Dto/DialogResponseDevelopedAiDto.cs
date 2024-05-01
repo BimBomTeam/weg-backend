@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WEG.Domain
+namespace WEG.Infrastructure.Dto
 {
-    public class UserRoles
+    public class DialogResponseDevelopedAiDto
     {
-        public const string Admin = "Admin";
-        public const string User = "User";
+        public string? Message { get; set; }
     }
 }

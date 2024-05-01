@@ -1,4 +1,5 @@
-﻿using WEG.Infrastructure.Dto.Dialog;
+﻿using Microsoft.Extensions.Configuration;
+using WEG.Infrastructure.Dto;
 using WEG.Infrastructure.Services;
 
 namespace WEG.Application.Services
@@ -6,13 +7,22 @@ namespace WEG.Application.Services
     public class DialogService : IDialogService
     {
         private readonly IAiService aiService;
-        public DialogService()
+        private readonly IAiCommunicationService aiCommunicationService;
+        public DialogService(IConfiguration config)
         {
             this.aiService = new AiService();
+            this.aiCommunicationService = new AiCommunicationService(config);
         }
-        public DialogResponseDto GetDialogResponse(DialogRequestDto message)
+        
+        public DialogResponseDevelopedAiDto GetDialogResponse(DialogResponseDevelopedAiDto message)
         {
-            string responseStr = aiService.DevelopMessageByAi(message.Message);
+            var responseStr = aiService.DevelopMessageByAi(message.Message);
+            DialogResponseDevelopedAiDto dialogResponse = new DialogResponseDevelopedAiDto { Message = responseStr };
+            return dialogResponse;
+        }
+        public DialogResponseDto GetMessageFrom(DialogRequestDto message)
+        {
+            var responseStr = aiCommunicationService.GetMessageFromAi(message.Message);
             DialogResponseDto dialogResponse = new DialogResponseDto() { Response = responseStr };
             return dialogResponse;
         }

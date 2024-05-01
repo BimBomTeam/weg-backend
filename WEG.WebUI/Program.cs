@@ -11,7 +11,7 @@ using WEG.Domain.Entities;
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
-// Add services to the container.
+configuration.AddJsonFile("secrets.json");
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -25,7 +25,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql
         npgsqlOptions.EnableRetryOnFailure();
     }
 ));
-
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -63,6 +62,13 @@ builder.Services.AddCors();
 
 builder.Services.AddTransient<IDialogService, DialogService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<IAiService, AiService>();
+builder.Services.AddTransient<IAiCommunicationService, AiCommunicationService>();
+
+var config = new ConfigurationBuilder()
+    .AddUserSecrets<Program>()
+    .Build();
+
 
 var app = builder.Build();
 
