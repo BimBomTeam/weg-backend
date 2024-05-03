@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WEG.Application.Services;
 using WEG.Infrastructure.Dto;
+using WEG.Infrastructure.Dto.Dialog;
 using WEG.Infrastructure.Models;
 using WEG.Infrastructure.Services;
 
