@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WEG.Domain.Entities;
 
-namespace WEG.Domain
+namespace WEG.Infrastructure.Queries
 {
-    public class UserRoles
+    public interface INpcRolesQuery : IBaseQuery<NpcRole,int>
     {
-        public const string Admin = "Admin";
-        public const string User = "User";
+
     }
 }

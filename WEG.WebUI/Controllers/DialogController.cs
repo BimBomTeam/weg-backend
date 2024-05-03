@@ -17,10 +17,11 @@ namespace WEG.Server.Controllers
             this.dialogService = dialogService;
         }
         [HttpPost(Name = "get-response")]
-        public async Task<IActionResult> GetResponse([FromBody] DialogRequestDto request)
+        public async Task<IActionResult> GetResponse([FromBody] DialogResponseDevelopedAiDto request)
         {
             var response = dialogService.GetDialogResponse(request);
             return Ok(response);
         }
+
     }
 }

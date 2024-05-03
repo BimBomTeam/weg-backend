@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WEG.Domain
+namespace WEG.Application.Claims
 {
-    public class UserRoles
+    public static class PromptContainer
     {
-        public const string Admin = "Admin";
-        public const string User = "User";
+        public const string Prompt = "email";
     }
 }
