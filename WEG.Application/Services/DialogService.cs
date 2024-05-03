@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using WEG.Infrastructure.Dto;
+using WEG.Infrastructure.Dto.Dialog;
 using WEG.Infrastructure.Services;
 
 namespace WEG.Application.Services
@@ -20,9 +21,9 @@ namespace WEG.Application.Services
             DialogResponseDevelopedAiDto dialogResponse = new DialogResponseDevelopedAiDto { Message = responseStr };
             return dialogResponse;
         }
-        public DialogResponseDto GetMessageFrom(DialogRequestDto message)
+        public async Task<DialogResponseDto> GetMessageFromAsync(DialogRequestDto message)
         {
-            var responseStr = aiCommunicationService.GetMessageFromAi(message.Message);
+            var responseStr = await aiCommunicationService.GetMessageFromAi(message.Message);
             DialogResponseDto dialogResponse = new DialogResponseDto() { Response = responseStr };
             return dialogResponse;
         }

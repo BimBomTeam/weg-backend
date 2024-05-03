@@ -2,6 +2,7 @@
 using WEG.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using WEG.Infrastructure.Dto.Dialog;
+using WEG.Infrastructure.Dto;
 
 namespace WEG.Server.Controllers
 {
