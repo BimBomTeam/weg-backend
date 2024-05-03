@@ -17,6 +17,7 @@ namespace WEG.Domain.Entities
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
         public virtual ICollection<DailyProgressStats> DailyProgresses { get; set; }
+        public bool FirstLogin { get; set; }
     }
 
 
