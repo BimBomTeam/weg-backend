@@ -24,8 +24,8 @@ RUN dotnet publish "WEG.WebUI/WEG.WebUI.csproj" -c Release -o out
 #Serve stage
 FROM mcr.microsoft.com/dotnet/sdk:6.0
 WORKDIR /app
-COPY mysite.crt /etc/ssl/certs/
-COPY mysite.key /etc/ssl/private/
+#COPY mysite.crt /etc/ssl/certs/
+#COPY mysite.key /etc/ssl/private/
 COPY --from=build /app/out .
 
 EXPOSE 5252

@@ -2,6 +2,6 @@
 {
     public class DialogResponseDto
     {
-        public Task<string> Response { get; set; }
+        public string Response { get; set; }
     }
 }
