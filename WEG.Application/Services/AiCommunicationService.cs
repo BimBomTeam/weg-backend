@@ -1,6 +1,6 @@
 ﻿using Azure.AI.OpenAI;
 using Microsoft.Extensions.Configuration;
-using WEG.Domain;
+using WEG.Application.Claims;
 using WEG.Infrastructure.Dto;
 using WEG.Infrastructure.Services;
 
@@ -35,7 +35,7 @@ namespace WEG.Application.Services
             //response.Value.Choices.Select(x => )
             return response.Value.Choices[0].Message.Content;
         }
-        public async Task<DialogDto> StartDialog(string role, string level, string wordsArray)
+        public async Task<IEnumerable<DialogDto>> StartDialog(string role, string level, string wordsArray)
         {
             string prompt = await _promptService.GetStartChatPromptAsync(level, role, wordsArray);
 
@@ -52,7 +52,13 @@ namespace WEG.Application.Services
             chatCompletionsOptions.Messages.Add(new ChatRequestUserMessage(prompt));
             var response = await _client.GetChatCompletionsAsync(chatCompletionsOptions);
 
-            return new DialogDto() { Message = response.Value.Choices[0].Message.Content, Role = UserRoles.User.ToString() };
+            var list = new List<DialogDto>()
+            {
+                new DialogDto() { Message = prompt, Role = DialogRoles.Assistant },
+                new DialogDto() { Message = response.Value.Choices[0].Message.Content, Role = DialogRoles.User }
+            };
+
+            return list;
         }
         public async Task<IEnumerable<DialogDto>> ContinueDialog(IEnumerable<DialogDto> messages, string messageStr)
         {
@@ -69,9 +75,9 @@ namespace WEG.Application.Services
             List<ChatRequestMessage> chatHistory = new List<ChatRequestMessage>();
             foreach (var message in messages)
             {
-                if (message.Role == ChatRole.Assistant)
+                if (message.Role == DialogRoles.Assistant)
                     chatHistory.Add(new ChatRequestAssistantMessage(message.Message));
-                else if (message.Role == ChatRole.User)
+                else if (message.Role == DialogRoles.User)
                     chatHistory.Add(new ChatRequestUserMessage(message.Message));
                 else
                     chatHistory.Add(new ChatRequestUserMessage(message.Message));
@@ -80,14 +86,19 @@ namespace WEG.Application.Services
             chatCompletionsOptions.Messages.Add(new ChatRequestUserMessage(messageStr));
             var response = await _client.GetChatCompletionsAsync(chatCompletionsOptions);
 
-            var result = response.Value.Choices.Select(mess =>
-                new DialogDto()
-                {
-                    Role = mess.Message.Role.ToString(),
-                    Message = mess.Message.Content
-                });
+            var conversation = new List<DialogDto>(messages);
+            conversation.Add(new DialogDto()
+            {
+                Message = messageStr,
+                Role = DialogRoles.User
+            });
+            conversation.Add(new DialogDto()
+            {
+                Message = response.Value.Choices[0].Message.Content,
+                Role = DialogRoles.Assistant
+            });
 
-            return result;
+            return conversation;
         }
     }
 }

@@ -26,5 +26,17 @@ namespace WEG_Server.Controllers
             var response = await aiCommunicationService.GetMessageFromAi(request.Message);
             return Ok(response);
         }
+        [HttpPost("start-dialog")]
+        public async Task<IActionResult> StartDialog([FromBody] StartDialogDto dto)
+        {
+            var response = await aiCommunicationService.StartDialog(dto.Role, dto.Level, dto.WordsStr);
+            return Ok(response);
+        }
+        [HttpPost("continue-dialog")]
+        public async Task<IActionResult> ContinueDialog([FromBody] ContinueDialogDto dto)
+        {
+            var response = await aiCommunicationService.ContinueDialog(dto.Messages, dto.MessageStr);
+            return Ok(response);
+        }
     }
 }
