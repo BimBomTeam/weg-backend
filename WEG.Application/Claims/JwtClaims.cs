@@ -3,5 +3,6 @@
     public static class JwtClaims
     {
         public const string Email = "email";
+        public const string FirstLogin = "first login";
     }
 }

@@ -11,7 +11,9 @@ using WEG.Domain.Entities;
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
-configuration.AddJsonFile("secrets.json", optional:true);
+
+configuration.AddJsonFile("secrets.json", optional: true);
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
