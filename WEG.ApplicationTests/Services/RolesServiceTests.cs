@@ -15,7 +15,7 @@ namespace WEG.Application.Services.Tests
         public void GetRandomRolesFromPoolTest()
         {
             RolesService service = new RolesService();
-            var result = service.GetRandomRolesFromPool();
+            var result = service.GetRandomRolesFromPoolAsync();
 
             Assert.IsNotNull(result);
         }
