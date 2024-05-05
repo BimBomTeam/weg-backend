@@ -28,5 +28,5 @@ namespace WEG_Server.Controllers
             var response = await aiCommunicationService.GetMessageFromAi(request.Message);
             return Ok(response);
         }
-        }
+    }
 }
