@@ -11,13 +11,14 @@
     <Configurations>Debug;Release;Production</Configurations>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="secrets.json" />
-  </ItemGroup>
+
 
   <ItemGroup>
-    <None Include="secrets.json" />
+    <None Include="secrets.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.16" />
