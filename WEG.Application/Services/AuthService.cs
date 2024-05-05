@@ -39,6 +39,7 @@ namespace WEG.Application.Services
             var authClaims = new List<Claim>
                 {
                     new Claim(JwtClaims.Email, user.Email),
+                    new Claim(JwtClaims.FirstLogin, user.FirstLogin.ToString()),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 
@@ -154,7 +155,6 @@ namespace WEG.Application.Services
             var authClaims = new List<Claim>
                 {
                     new Claim(JwtClaims.Email, user.Email),
-                    new Claim(JwtClaims.FirstLogin, user.FirstLogin.ToString()),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 
