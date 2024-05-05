@@ -33,6 +33,9 @@
 		</Compile>
 	</ItemGroup>
 	<ItemGroup>
+    <None Update="Static\prompts.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Static\roles-pool.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

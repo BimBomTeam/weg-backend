@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace WEG.Application.Claims
 {
-    public static class PromptContainer
+    public static class DialogRoles
     {
-        public const string Prompt = "email";
+        public static string User { get => "User"; }
+        public static string Assistant { get => "Assistant"; }
     }
 }

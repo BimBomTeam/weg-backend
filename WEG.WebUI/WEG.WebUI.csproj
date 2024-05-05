@@ -11,10 +11,18 @@
     <Configurations>Debug;Release;Production</Configurations>
   </PropertyGroup>
 
-
+  <ItemGroup>
+    <Content Remove="secrets.json" />
+    <Content Remove="Static\prompts.json" />
+    <Content Remove="Static\roles-pool.json" />
+  </ItemGroup>
 
   <ItemGroup>
-    <None Include="secrets.json">
+    <None Include="secrets.json" />
+    <None Include="Static\prompts.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Static\roles-pool.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

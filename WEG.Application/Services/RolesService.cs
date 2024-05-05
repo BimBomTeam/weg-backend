@@ -16,7 +16,6 @@ namespace WEG.Application.Services
             {
                 return await Task.Run(() =>
             {
-
                 string jsonFilePath = "Static/roles-pool.json";
                 string jsonString = File.ReadAllText(jsonFilePath);
                 var allRoles = JsonSerializer.Deserialize<List<string>>(jsonString);
@@ -35,7 +34,6 @@ namespace WEG.Application.Services
                         randomElements.Add(allRoles.ElementAt(index));
                 }
                 return randomElements;
-
             });
             }
             catch (Exception)
