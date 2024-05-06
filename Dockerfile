@@ -1,6 +1,10 @@
 #Build stage
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+
+ENV ASPNETCORE_URLS="http://+:5000"
+EXPOSE 5000
+
 WORKDIR /app
 COPY "WEG-Server.sln" "./"
 
@@ -27,8 +31,6 @@ WORKDIR /app
 #COPY mysite.crt /etc/ssl/certs/
 #COPY mysite.key /etc/ssl/private/
 COPY --from=build /app/out .
-
-EXPOSE 5252
 
 ENTRYPOINT ["dotnet", "WEG.WebUI.dll"]
 
