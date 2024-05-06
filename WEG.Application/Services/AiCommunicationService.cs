@@ -54,8 +54,8 @@ namespace WEG.Application.Services
 
             var list = new List<DialogDto>()
             {
-                new DialogDto() { Message = prompt, Role = DialogRoles.Assistant },
-                new DialogDto() { Message = response.Value.Choices[0].Message.Content, Role = DialogRoles.User }
+                new DialogDto() { Message = prompt, Role = DialogRoles.User },
+                new DialogDto() { Message = response.Value.Choices[0].Message.Content, Role = DialogRoles.Assistant }
             };
 
             return list;
