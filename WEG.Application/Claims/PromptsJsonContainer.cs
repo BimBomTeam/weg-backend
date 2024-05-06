@@ -25,5 +25,7 @@ namespace WEG.Application.Claims
 
         [JsonPropertyName("get-mistakes-prompt")]
         public string GetMistakesPrompt { get; set; }
+        [JsonPropertyName("excpted-words-format")]
+        public string ExceptedWordsFormat { get; set; }
     }
 }

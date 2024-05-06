@@ -2,6 +2,7 @@
 using WEG.Application.Services;
 using WEG.Infrastructure.Dto;
 using WEG.Infrastructure.Dto.Dialog;
+using WEG.Infrastructure.Dto.WordsGenerate;
 using WEG.Infrastructure.Models;
 using WEG.Infrastructure.Services;
 
@@ -12,31 +13,50 @@ namespace WEG_Server.Controllers
     public class AiCommunicationController : Controller
     {
         IAiCommunicationService aiCommunicationService;
-        IAiService aiService;
 
-        public AiCommunicationController(IAiCommunicationService aiCommunicationService, IAiService aiService)
+        public AiCommunicationController(IAiCommunicationService aiCommunicationService)
         {
             this.aiCommunicationService = aiCommunicationService;
-            this.aiService = aiService;
         }
 
-        [HttpPost("get-responseAI")]
-        public async Task<IActionResult> GetFromAi([FromBody] DialogRequestDto request)
+        [HttpPost("generate-words")]
+        public async Task<IActionResult> GenerateWords([FromBody] GenerateWordsRequestDto request)
         {
-            var response = await aiCommunicationService.GetMessageFromAi(request.Message);
-            return Ok(response);
+            try
+            {
+                var response = await aiCommunicationService.GenerateWordsAsync(request.Level, request.Role);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPost("start-dialog")]
         public async Task<IActionResult> StartDialog([FromBody] StartDialogDto dto)
         {
-            var response = await aiCommunicationService.StartDialog(dto.Role, dto.Level, dto.WordsStr);
-            return Ok(response);
+            try
+            {
+                var response = await aiCommunicationService.StartDialog(dto.Role, dto.Level, dto.WordsStr);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPost("continue-dialog")]
         public async Task<IActionResult> ContinueDialog([FromBody] ContinueDialogDto dto)
         {
-            var response = await aiCommunicationService.ContinueDialog(dto.Messages, dto.MessageStr);
-            return Ok(response);
+            try
+            {
+                var response = await aiCommunicationService.ContinueDialog(dto.Messages, dto.MessageStr);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
