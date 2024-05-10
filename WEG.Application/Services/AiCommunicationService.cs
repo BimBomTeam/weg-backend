@@ -1,10 +1,12 @@
-﻿using Azure.AI.OpenAI;
+﻿using Azure;
+using Azure.AI.OpenAI;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
 using System.Text.Json;
 using WEG.Application.Claims;
 using WEG.Infrastructure.Dto;
+using WEG.Infrastructure.Dto.Boss;
 using WEG.Infrastructure.Dto.WordsGenerate;
 using WEG.Infrastructure.Services;
 
@@ -111,6 +113,40 @@ namespace WEG.Application.Services
                 if (wordsArray == null)
                     throw new Exception("Bad JSON words format from OpenAi");
                 return wordsArray;
+            }
+            catch (Exception)
+            {
+                throw new Exception("Bad JSON words format from OpenAi");
+                throw;
+            }
+
+        }
+
+        public async Task<BossQuizUnitDto> GenerateBossQuiz(string wordtoTranslate)
+        {
+            var prompt = await _promptService.GetStartBossPromptAsync(wordtoTranslate);
+
+            var chatCompletionsOptions = new ChatCompletionsOptions()
+            {
+                DeploymentName = "gpt-3.5-turbo",
+                Temperature = (float)1,
+                MaxTokens = 800,
+                NucleusSamplingFactor = (float)0.95,
+                FrequencyPenalty = 0,
+                PresencePenalty = 0,
+                ResponseFormat = ChatCompletionsResponseFormat.JsonObject,
+            };
+
+            chatCompletionsOptions.Messages.Add(new ChatRequestUserMessage(prompt));
+            var response = await _client.GetChatCompletionsAsync(chatCompletionsOptions);
+            var responseStr = response.Value.Choices[0].Message.Content;
+
+            try
+            {
+                var answers = JsonSerializer.Deserialize<BossQuizUnitDto>(responseStr);
+                if (answers == null)
+                    throw new Exception("Bad JSON words format from OpenAi");
+                return answers;
             }
             catch (Exception)
             {

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Diagnostics;
+using System.Data;
+using System.Reflection.Emit;
 using System.Text.Json;
 using WEG.Application.Claims;
 
@@ -34,6 +36,15 @@ namespace WEG.Application.Services
 
                 return result;
             });
+        }
+        public async Task<string> GetStartBossPromptAsync(string wordToTranslate)
+        {
+            return await Task.Run<string>(() =>
+            {
+                var raw = _rawPrompts.GetTranslationIntoPolishPrompt;
+                var result = raw.Replace("{0}", wordToTranslate);
+                return result;
+            }); 
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using WEG.Application.Services;
 using WEG.Infrastructure.Dto;
+using WEG.Infrastructure.Dto.Boss;
 using WEG.Infrastructure.Dto.Dialog;
 using WEG.Infrastructure.Dto.WordsGenerate;
 using WEG.Infrastructure.Models;
@@ -51,6 +53,19 @@ namespace WEG_Server.Controllers
             try
             {
                 var response = await aiCommunicationService.ContinueDialog(dto.Messages, dto.MessageStr);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("get-boss-quiz")]
+        public async Task<IActionResult> GetBossQuiz([FromBody] BossQuizUnitDto dto)
+        {
+            try
+            {
+                var response = await aiCommunicationService.GenerateBossQuiz(dto.Word);
                 return Ok(response);
             }
             catch (Exception ex)
