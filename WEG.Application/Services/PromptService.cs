@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using Microsoft.AspNetCore.Mvc.Diagnostics;
+using System.Text.Json;
 using WEG.Application.Claims;
 
 namespace WEG.Application.Services
@@ -14,10 +15,12 @@ namespace WEG.Application.Services
         }
         public async Task<string> GetGenerateWordsPromptAsync(string level, string role)
         {
-            return await Task.Run<string>(() =>
+            return await Task.Run(() =>
             {
                 var raw = _rawPrompts.GenerateWordsPrompt;
                 var result = string.Format(raw, level, role);
+                var exceptedWordsFormat = _rawPrompts.ExceptedWordsFormat;
+                result += exceptedWordsFormat;
 
                 return result;
             });

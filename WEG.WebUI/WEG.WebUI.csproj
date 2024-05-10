@@ -18,7 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="secrets.json" />
+    <None Include="secrets.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Static\prompts.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
