@@ -9,21 +9,23 @@ using WEG.Infrastructure.Services;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using WEG.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WEG_Server.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AiCommunicationController : Controller
     {
         IAiCommunicationService aiCommunicationService;
         IAiService aiService;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser> userManager;
             public AiCommunicationController(IAiCommunicationService aiCommunicationService, IAiService aiService, UserManager<ApplicationUser> userManager)
-        {
+            {
             this.aiCommunicationService = aiCommunicationService;
             this.aiService = aiService;
-                _userManager = userManager;
+            this.userManager = userManager;
             }
 
         [HttpPost("get-responseAI")]
@@ -35,12 +37,14 @@ namespace WEG_Server.Controllers
         [HttpPost("start-dialog")]
         public async Task<IActionResult> StartDialog([FromBody] StartDialogDto dto)
         {
-            string? userId = User.FindFirst(ClaimTypes.Email)?.Value;
-            string? userEmail = await HttpContext.GetTokenAsync(JwtBearerDefaults.AuthenticationScheme, "email");
-            var user = await _userManager.FindByEmailAsync(userEmail);
-            var level = user.Level.ToString();
-            var xd = "A1";
-            var response = await aiCommunicationService.StartDialog(dto.Role, xd, dto.WordsStr);
+            var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            if (userEmail == null)
+            {
+                return BadRequest("User login error");
+            }
+            var user = await userManager.FindByEmailAsync(userEmail);
+            var userLevel = user.Level.ToString(); 
+            var response = await aiCommunicationService.StartDialog(dto.Role, userLevel, dto.WordsStr);
             return Ok(response);
         }
         [HttpPost("continue-dialog")]

@@ -68,6 +68,10 @@ namespace WEG.Application.Services
             if (userExists != null)
                 throw new Exception("User already exists.");
 
+            var emailUsed = await _userManager.FindByEmailAsync(model.Email);
+            if (emailUsed != null)
+                throw new Exception("Email is used.");
+
             ApplicationUser user = new()
             {
                 Email = model.Email,
