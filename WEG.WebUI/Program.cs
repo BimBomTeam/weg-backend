@@ -1,4 +1,4 @@
-using WEG.Infrastructure.Services;
+﻿using WEG.Infrastructure.Services;
 using WEG.Application.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -76,11 +76,11 @@ var config = new ConfigurationBuilder()
 
 //Hangfire
 
-builder.Services.AddHangfire(cfg =>
-cfg.UseRedisStorage(
-    builder.Configuration.GetConnectionString("HangfireConnection")
-));
-builder.Services.AddHangfireServer();
+//builder.Services.AddHangfire(cfg =>
+//cfg.UseRedisStorage(
+//    builder.Configuration.GetConnectionString("HangfireConnection")
+//));
+//builder.Services.AddHangfireServer();
 
 
 var app = builder.Build();
@@ -107,6 +107,15 @@ app.UseAuthentication();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.Use(async (context, next) =>
+{
+    //RecurringJob.AddOrUpdate("DailyJob",
+    //    () => Console.WriteLine("Zadanie wykonane o: " + DateTime.UtcNow.ToString()),
+    //    Cron.Daily(22, 1)); //Czas UTC (2h do tyłu. U nas będzie 00:01));
+
+    await next();
+});
 
 app.MapControllers();
 
