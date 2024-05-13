@@ -14,7 +14,7 @@ using WEG_Server.Controllers;
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
-// Add services to the container.
+configuration.AddJsonFile("secrets.json", optional: true);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -28,7 +28,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql
         npgsqlOptions.EnableRetryOnFailure();
     }
 ));
-
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -55,16 +54,25 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = configuration["JWT:ValidAudience"],
         ValidIssuer = configuration["JWT:ValidIssuer"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"])),
-        ClockSkew=TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero
     };
 });
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors();
+builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddTransient<IDialogService, DialogService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<ILevelChangeService, LevelChangeService>();
+builder.Services.AddTransient<IAiCommunicationService, AiCommunicationService>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+var config = new ConfigurationBuilder()
+    .AddUserSecrets<Program>()
+    .Build();
+
 
 //Hangfire
 
@@ -80,6 +88,13 @@ var app = builder.Build();
 var loggerFactory = app.Services.GetService<ILoggerFactory>();
 loggerFactory.AddFile(builder.Configuration["Logging:LogFilePath"].ToString());
 
+
+app.UseCors(x => x
+   .AllowAnyMethod()
+   .AllowAnyHeader()
+   .SetIsOriginAllowed(origin => true) // allow any origin
+                                       //.WithOrigins("https://localhost:44351")); // Allow only this origin can also have multiple origins separated with comma
+   .AllowCredentials()); // allow credentials
 
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())

@@ -39,6 +39,7 @@ namespace WEG.Application.Services
             var authClaims = new List<Claim>
                 {
                     new Claim(JwtClaims.Email, user.Email),
+                    new Claim(JwtClaims.FirstLogin, user.FirstLogin.ToString()),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 
@@ -54,6 +55,9 @@ namespace WEG.Application.Services
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(3);
 
+            if(user.FirstLogin == true)
+            user.FirstLogin = false;
+
             await _userManager.UpdateAsync(user);
 
             return new TokenModel() { AccessToken = token, RefreshToken = refreshToken };
@@ -68,7 +72,8 @@ namespace WEG.Application.Services
             {
                 Email = model.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Username
+                UserName = model.Username,
+                FirstLogin = true
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
