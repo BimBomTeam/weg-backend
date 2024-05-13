@@ -23,7 +23,7 @@ namespace WEG.Application.Services
             _client = new OpenAIClient(config["gpt_api_key"]);
             _promptService = new PromptService();
         }
-        public async Task<IEnumerable<DialogDto>> StartDialog(string role, string level, string wordsArray)
+        public async Task<IEnumerable<DialogDto>> StartDialogAsync(string role, string level, string wordsArray)
         {
             string prompt = await _promptService.GetStartChatPromptAsync(level, role, wordsArray);
 
@@ -48,7 +48,7 @@ namespace WEG.Application.Services
 
             return list;
         }
-        public async Task<IEnumerable<DialogDto>> ContinueDialog(IEnumerable<DialogDto> messages, string messageStr)
+        public async Task<IEnumerable<DialogDto>> ContinueDialogAsync(IEnumerable<DialogDto> messages, string messageStr)
         {
             var chatCompletionsOptions = new ChatCompletionsOptions
             {
@@ -120,7 +120,7 @@ namespace WEG.Application.Services
             }
 
         }
-        public async Task<BossQuizUnitDto> GenerateBossQuiz(string wordToTranslate)
+        public async Task<BossQuizUnitDto> GenerateBossQuizAsync(string wordToTranslate)
         {
             var prompt = await _promptService.GetStartBossPromptAsync(wordToTranslate);
 

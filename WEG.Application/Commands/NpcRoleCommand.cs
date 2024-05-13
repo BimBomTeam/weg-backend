@@ -10,6 +10,6 @@ namespace WEG.Application.Commands
 {
     public class NpcRoleCommand : BaseCommand<NpcRole,int>, INpcRoleCommand
     {
-        NpcRoleCommand(ApplicationDbContext context) : base(context) { }
+        public NpcRoleCommand(ApplicationDbContext context) : base(context) { }
     }
 }

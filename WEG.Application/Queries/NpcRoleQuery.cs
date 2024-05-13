@@ -10,6 +10,6 @@ namespace WEG.Application.Queries
 {
     public class NpcRoleQuery : BaseQuery<NpcRole,int>, INpcRolesQuery
     {
-        NpcRoleQuery(ApplicationDbContext context) : base(context) { }  
+        public NpcRoleQuery(ApplicationDbContext context) : base(context) { }  
     }
 }
