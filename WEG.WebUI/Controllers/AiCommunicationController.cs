@@ -61,7 +61,7 @@ namespace WEG_Server.Controllers
             }
         }
         [HttpPost("get-boss-quiz")]
-        public async Task<IActionResult> GetBossQuiz([FromBody] BossQuizUnitDto dto)
+        public async Task<IActionResult> GetBossQuiz([FromBody] BossQuizRequestDto dto)
         {
             try
             {

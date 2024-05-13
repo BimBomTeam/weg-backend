@@ -88,7 +88,6 @@ namespace WEG.Application.Services
 
             return conversation;
         }
-
         public async Task<GenerateWordsResponseDto> GenerateWordsAsync(string level, string role)
         {
             string prompt = await _promptService.GetGenerateWordsPromptAsync(level, role);
@@ -121,10 +120,9 @@ namespace WEG.Application.Services
             }
 
         }
-
-        public async Task<BossQuizUnitDto> GenerateBossQuiz(string wordtoTranslate)
+        public async Task<BossQuizUnitDto> GenerateBossQuiz(string wordToTranslate)
         {
-            var prompt = await _promptService.GetStartBossPromptAsync(wordtoTranslate);
+            var prompt = await _promptService.GetStartBossPromptAsync(wordToTranslate);
 
             var chatCompletionsOptions = new ChatCompletionsOptions()
             {
