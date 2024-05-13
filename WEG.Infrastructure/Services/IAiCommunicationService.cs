@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WEG.Infrastructure.Dto;
+using WEG.Infrastructure.Dto.Boss;
 using WEG.Infrastructure.Dto.WordsGenerate;
 
 namespace WEG.Infrastructure.Services
@@ -13,5 +14,6 @@ namespace WEG.Infrastructure.Services
         Task<GenerateWordsResponseDto> GenerateWordsAsync(string level, string role);
         Task<IEnumerable<DialogDto>> ContinueDialog(IEnumerable<DialogDto> messages, string messageStr);
         Task<IEnumerable<DialogDto>> StartDialog(string role, string level, string wordsArray);
+        Task<BossQuizUnitDto> GenerateBossQuiz(string wordtoTranslate);
     }
 }
