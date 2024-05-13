@@ -1,4 +1,9 @@
 ﻿using System.Text.Json;
+using WEG.Domain.Entities;
+using WEG.Infrastructure.Commands;
+using WEG.Infrastructure.Dto;
+using WEG.Infrastructure.Dto.Roles;
+using WEG.Infrastructure.Queries;
 using WEG.Infrastructure.Services;
 
 namespace WEG.Application.Services
@@ -6,11 +11,26 @@ namespace WEG.Application.Services
     public class RolesService : IRolesService
     {
         private readonly Random rnd;
-        public RolesService()
+        private readonly IGameDayQuery gameDayQuery;
+        private readonly IGameDayCommand gameDayCommand;
+        private readonly INpcRoleCommand roleCommand;
+        private readonly INpcRolesQuery roleQuery;
+        private readonly IRedisCacheService redisService;
+
+        public RolesService(IGameDayQuery gameDayQuery,
+            IGameDayCommand gameDayCommand,
+            IRedisCacheService redisService,
+            INpcRoleCommand npcRoleCommand,
+            INpcRolesQuery npcRoleQuery)
         {
             rnd = new Random();
+            this.gameDayQuery = gameDayQuery;
+            this.gameDayCommand = gameDayCommand;
+            this.redisService = redisService;
+            this.roleCommand = npcRoleCommand;
+            this.roleQuery = npcRoleQuery;
         }
-        public async Task<IEnumerable<string>> GetRandomRolesFromPoolAsync(int count = 5)
+        private async Task<IEnumerable<string>> GetRandomRolesFromPoolAsync(int count = 5)
         {
             try
             {
@@ -40,6 +60,60 @@ namespace WEG.Application.Services
             {
                 throw;
             }
+        }
+        public async Task GenerateNewWordsAsync()
+        {
+            try
+            {
+                var todayGameDay = await gameDayQuery.GetTodayGameDayAsync();
+                if (todayGameDay == null)
+                    todayGameDay = await gameDayCommand.CreateTodayAsync();
+
+                var roles = await GetRandomRolesFromPoolAsync();
+                var dbRoles = new List<NpcRole>();
+                foreach (var roleName in roles)
+                {
+                    NpcRole role = new NpcRole()
+                    {
+                        Day = todayGameDay,
+                        DayId = todayGameDay.Id,
+                        Name = roleName
+                    };
+                    await roleCommand.AddAsync(role);
+                    dbRoles.Add(role);
+                }
+
+                await roleCommand.SaveChangesAsync();
+
+                List<RolesRedisDto> rolesRedisDtos = new List<RolesRedisDto>();
+                foreach (var role in dbRoles)
+                {
+                    rolesRedisDtos.Add(new RolesRedisDto()
+                    {
+                        Id = role.Id,
+                        Name = role.Name,
+                    });
+                }
+                await redisService.ClearAllRolesAsync();
+                await redisService.SaveRolesAsync(rolesRedisDtos);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<IEnumerable<RoleDto>> GetAllRolesAsync()
+        {
+            if (await redisService.IsEmptyAsync())
+                await GenerateNewWordsAsync();
+
+            var redisDtos = await redisService.GetAllRolesAsync();
+            var result = new List<RoleDto>();
+            foreach (var dto in redisDtos)
+            {
+                result.Add(new RoleDto() { Id = dto.Id, Name = dto.Name });
+            }
+            return result;
         }
     }
 }

@@ -10,6 +10,10 @@ using WEG.Domain.Entities;
 using Hangfire;
 using Hangfire.Redis.StackExchange;
 using WEG_Server.Controllers;
+using WEG.Infrastructure.Queries;
+using WEG.Application.Queries;
+using WEG.Infrastructure.Commands;
+using WEG.Application.Commands;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -21,6 +25,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Postgres
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(
     builder.Configuration.GetConnectionString("DefaultConnection"),
     npgsqlOptions =>
@@ -28,6 +33,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql
         npgsqlOptions.EnableRetryOnFailure();
     }
 ));
+//Hangfire
+builder.Services.AddHangfire(cfg =>
+    cfg.UseRedisStorage(
+        builder.Configuration.GetConnectionString("HangfireConnection")
+    ));
+
+builder.Services.AddHangfireServer();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -66,22 +78,20 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<ILevelChangeService, LevelChangeService>();
+builder.Services.AddTransient<IRolesService, RolesService>();
 builder.Services.AddTransient<IAiCommunicationService, AiCommunicationService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
+
+builder.Services.AddTransient<IGameDayQuery, GameDayQuery>();
+builder.Services.AddTransient<INpcRolesQuery, NpcRoleQuery>();
+
+builder.Services.AddTransient<IGameDayCommand, GameDayCommand>();
+builder.Services.AddTransient<INpcRoleCommand, NpcRoleCommand>();
 
 var config = new ConfigurationBuilder()
     .AddUserSecrets<Program>()
     .Build();
-
-
-//Hangfire
-
-//builder.Services.AddHangfire(cfg =>
-//cfg.UseRedisStorage(
-//    builder.Configuration.GetConnectionString("HangfireConnection")
-//));
-//builder.Services.AddHangfireServer();
-
 
 var app = builder.Build();
 

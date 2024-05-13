@@ -39,7 +39,7 @@ namespace WEG_Server.Controllers
         {
             try
             {
-                var response = await aiCommunicationService.StartDialog(dto.Role, dto.Level, dto.WordsStr);
+                var response = await aiCommunicationService.StartDialogAsync(dto.Role, dto.Level, dto.WordsStr);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -52,7 +52,7 @@ namespace WEG_Server.Controllers
         {
             try
             {
-                var response = await aiCommunicationService.ContinueDialog(dto.Messages, dto.MessageStr);
+                var response = await aiCommunicationService.ContinueDialogAsync(dto.Messages, dto.MessageStr);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -65,7 +65,7 @@ namespace WEG_Server.Controllers
         {
             try
             {
-                var response = await aiCommunicationService.GenerateBossQuiz(dto.Word);
+                var response = await aiCommunicationService.GenerateBossQuizAsync(dto.Word);
                 return Ok(response);
             }
             catch (Exception ex)

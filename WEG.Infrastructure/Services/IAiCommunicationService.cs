@@ -12,8 +12,8 @@ namespace WEG.Infrastructure.Services
     public interface IAiCommunicationService
     {
         Task<GenerateWordsResponseDto> GenerateWordsAsync(string level, string role);
-        Task<IEnumerable<DialogDto>> ContinueDialog(IEnumerable<DialogDto> messages, string messageStr);
-        Task<IEnumerable<DialogDto>> StartDialog(string role, string level, string wordsArray);
-        Task<BossQuizUnitDto> GenerateBossQuiz(string wordtoTranslate);
+        Task<IEnumerable<DialogDto>> ContinueDialogAsync(IEnumerable<DialogDto> messages, string messageStr);
+        Task<IEnumerable<DialogDto>> StartDialogAsync(string role, string level, string wordsArray);
+        Task<BossQuizUnitDto> GenerateBossQuizAsync(string wordtoTranslate);
     }
 }

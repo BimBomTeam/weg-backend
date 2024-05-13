@@ -11,7 +11,6 @@ namespace WEG.Domain.Entities
         public int DayId { get; set; }
         public virtual GameDay Day { get; set; }
 
-        public virtual ICollection<Word> Words { get; set; }
-
+        public virtual ICollection<Word> Words { get; set; } = new List<Word>();
     }
 }
