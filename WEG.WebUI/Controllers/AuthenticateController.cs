@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
+using WEG.Application.Claims;
 using WEG.Domain.Entities;
 using WEG.Infrastructure.Dto;
 using WEG.Infrastructure.Models;
@@ -32,15 +33,15 @@ namespace WEG_Server.Controllers
             try
             {
                 var tokens = await _authService.LoginAsync(model);
-
                 if (tokens == null)
                     return Unauthorized("Invalid credentials");
                 _logger.LogInformation("User logged " + tokens);
-
+                var firstLogin = tokens?.AccessToken?.Claims.FirstOrDefault(claim => claim.Type == "firstLogin")?.Value;
                 return Ok(new
                 {
                     Token = new JwtSecurityTokenHandler().WriteToken(tokens?.AccessToken),
                     RefreshToken = tokens?.RefreshToken,
+                    FirstLogin = firstLogin,
                     Expiration = tokens.AccessToken?.ValidTo
                 });
             }
