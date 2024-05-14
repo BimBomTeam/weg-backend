@@ -9,6 +9,11 @@ namespace WEG.Application.Queries
 {
     public class WordsQuery : BaseQuery<Word,int>, IWordsQuery
     {
-        WordsQuery(ApplicationDbContext context) : base(context) { }
+        public WordsQuery(ApplicationDbContext context) : base(context) { }
+
+        public IEnumerable<Word> GetWordsByDailyProgressAndRole(int progressId, int roleId)
+        {
+            return context.Words.Where(x => x.DailyProgressId == progressId && x.RoleId == roleId);
+        }
     }
 }

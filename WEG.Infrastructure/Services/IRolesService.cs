@@ -6,5 +6,6 @@ namespace WEG.Infrastructure.Services
     {
         Task<IEnumerable<RoleDto>> GetAllRolesAsync();
         Task GenerateNewWordsAsync();
+        Task<RoleDto> GetByIdRole(int roleId);
     }
 }

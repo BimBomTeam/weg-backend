@@ -76,17 +76,24 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors();
 builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<ILevelChangeService, LevelChangeService>();
 builder.Services.AddTransient<IRolesService, RolesService>();
 builder.Services.AddTransient<IAiCommunicationService, AiCommunicationService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
+builder.Services.AddSingleton<IWordService, WordService>();
 builder.Services.AddSingleton<IDialogService, DialogService>();
 
 builder.Services.AddTransient<IGameDayQuery, GameDayQuery>();
 builder.Services.AddTransient<INpcRolesQuery, NpcRoleQuery>();
+builder.Services.AddTransient<IDailyProgressStatsQuery, DailyProgressStatsQuery>();
+builder.Services.AddTransient<IWordsQuery, WordsQuery>();
 
+builder.Services.AddTransient<IWordsCommand, WordsCommand>();
+builder.Services.AddTransient<IDailyProgressStatsCommand, DailyProgressStatsCommand>();
 builder.Services.AddTransient<IGameDayCommand, GameDayCommand>();
 builder.Services.AddTransient<INpcRoleCommand, NpcRoleCommand>();
 
