@@ -85,6 +85,7 @@ builder.Services.AddTransient<IAiCommunicationService, AiCommunicationService>()
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 builder.Services.AddSingleton<IWordService, WordService>();
+builder.Services.AddSingleton<IDialogService, DialogService>();
 
 builder.Services.AddTransient<IGameDayQuery, GameDayQuery>();
 builder.Services.AddTransient<INpcRolesQuery, NpcRoleQuery>();
