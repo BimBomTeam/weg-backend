@@ -141,5 +141,21 @@ namespace WEG.Infrastructure.Services
                 throw new Exception($"Error in words generating: {ex.Message}");
             }
         }
+        public async Task CheckWordsAsync(IEnumerable<WordDto> words, string text)
+        {
+            await Task<IEnumerable<WordDto>>.Run(() =>
+            {
+                var wordDictionary = words.ToDictionary(w => w.Name, w => w, StringComparer.OrdinalIgnoreCase);
+
+                string[] separators = { " ", ".", ",", "?", "!", ";", ":", "\t", "\n", "\r" };
+                foreach (var word in text.Split(separators, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    if (wordDictionary.TryGetValue(word, out WordDto wordDto))
+                    {
+                        wordDto.State = WordProgressState.Learned.ToString();
+                    }
+                }
+            });
+        }
     }
 }

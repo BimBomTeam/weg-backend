@@ -4,7 +4,6 @@ using System.Security.Claims;
 using WEG.Domain.Entities;
 using WEG.Infrastructure.Dto;
 using WEG.Infrastructure.Dto.Dialog;
-using WEG.Infrastructure.Queries;
 using WEG.Infrastructure.Services;
 
 namespace WEG.Application.Services
@@ -14,16 +13,16 @@ namespace WEG.Application.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAiCommunicationService aiCommunicationService;
-        private readonly INpcRolesQuery rolesQuery;
+        private readonly IWordService wordService;
         public DialogService(UserManager<ApplicationUser> userManager,
             IHttpContextAccessor httpContextAccessor,
             IAiCommunicationService aiCommunicationService,
-            INpcRolesQuery rolesQuery)
+            IWordService wordService)
         {
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
             this.aiCommunicationService = aiCommunicationService;
-            this.rolesQuery = rolesQuery;
+            this.wordService = wordService;
         }
         public async Task<IEnumerable<DialogDto>> StartDialogAsync(StartDialogDto dto)
         {
@@ -43,12 +42,27 @@ namespace WEG.Application.Services
 
             return result;
         }
-        public async Task<IEnumerable<DialogDto>> ContinueDialogAsync(ContinueDialogDto dto)
+        public async Task<ContinueDialogResponseDto> ContinueDialogAsync(ContinueDialogDto dto)
         {
             try
             {
-                var response = await aiCommunicationService.ContinueDialogAsync(dto.Messages, dto.MessageStr);
-                return response;
+                var checkWordTask = Task.Run(() =>
+                {
+                    wordService.CheckWordsAsync(dto.Words, dto.MessageStr);
+                });
+                var getDialogResponse = Task.Run(() =>
+                {
+                    var response = aiCommunicationService.ContinueDialogAsync(dto.Messages, dto.MessageStr);
+                    return response;
+                });
+                Task.WaitAll(checkWordTask, getDialogResponse);
+
+                var result = new ContinueDialogResponseDto()
+                {
+                    Words = dto.Words,
+                    Dialog = getDialogResponse.Result
+                };
+                return result;
             }
             catch (Exception)
             {

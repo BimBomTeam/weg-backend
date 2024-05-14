@@ -6,7 +6,7 @@ namespace WEG.Infrastructure.Services
     public interface IDialogService
     {
         Task<IEnumerable<DialogDto>> StartDialogAsync(StartDialogDto dto);
-        Task<IEnumerable<DialogDto>> ContinueDialogAsync(ContinueDialogDto dto);
+        Task<ContinueDialogResponseDto> ContinueDialogAsync(ContinueDialogDto dto);
 
     }
 }
