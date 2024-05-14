@@ -88,6 +88,7 @@ namespace WEG.Application.Services
 
             return conversation;
         }
+
         public async Task<GenerateWordsResponseDto> GenerateWordsAsync(string level, string role)
         {
             string prompt = await _promptService.GetGenerateWordsPromptAsync(level, role);

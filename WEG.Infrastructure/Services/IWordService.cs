@@ -11,6 +11,6 @@ namespace WEG.Infrastructure.Services
     public interface IWordService
     {
         Task<IEnumerable<WordDto>> GetWordsByRoleAsync(int roleId);
-        Task UpdateWordStatusAsync(int wordId, WordProgressState newState);
+       
     }
 }

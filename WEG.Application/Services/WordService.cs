@@ -24,7 +24,7 @@ namespace WEG.Infrastructure.Services
         private readonly GameDayCommand _gameDayCommand;
         private readonly DailyProgressStatsCommand _dailyProgressCommand;
         private readonly DailyProgressStatsQuery _dailyProgressQuery;
-
+        private readonly NpcRoleQuery _npcRoleQuery;
         public WordService(ApplicationDbContext context,
             IAiCommunicationService aiService,
             UserManager<ApplicationUser> userManager,
@@ -32,7 +32,8 @@ namespace WEG.Infrastructure.Services
             GameDayQuery gameDayQuery,
             GameDayCommand gameDayCommand,
             DailyProgressStatsQuery dailyProgressQuery,
-            DailyProgressStatsCommand dailyProgressCommand)
+            DailyProgressStatsCommand dailyProgressCommand,
+            NpcRoleQuery npcRoleQuery)
         {
             _context = context;
             _aiService = aiService;
@@ -42,6 +43,7 @@ namespace WEG.Infrastructure.Services
             _gameDayCommand = gameDayCommand;
             _dailyProgressQuery = dailyProgressQuery;
             _dailyProgressCommand = dailyProgressCommand;
+            _npcRoleQuery = npcRoleQuery;
         }
 
         public async Task<IEnumerable<WordDto>> GetWordsByRoleAsync(int roleId)
@@ -54,6 +56,8 @@ namespace WEG.Infrastructure.Services
             var todayGameDay = await _gameDayQuery.GetTodayGameDayAsync();
             if (todayGameDay == null)
                 todayGameDay = await _gameDayCommand.CreateTodayAsync();
+            var roleName = await _npcRoleQuery.GetByIdAsync(roleId);
+
 
             try
             {
@@ -76,7 +80,7 @@ namespace WEG.Infrastructure.Services
 
                     string level = user.Level.ToString();
 
-                    var generatedWords = await _aiService.GenerateWordsAsync(level, "role");
+                    var generatedWords = await _aiService.GenerateWordsAsync(level, roleName.Name);
 
                     var newWords = new List<Word>();
                     foreach (var word in generatedWords.Words)
@@ -107,14 +111,14 @@ namespace WEG.Infrastructure.Services
                 throw new Exception($"Wystąpił błąd podczas generowania słówek dla nowego NPC: {ex.Message}");
             }
 
-            // Jeśli NPC istnieje, pobierz słówka przypisane do niego z bazy danych
+            
             var words = await _context.Words
                 .Where(w => w.RoleId == roleId)
                 .Select(w => new WordDto
                 {
                     Id = w.Id,
                     Name = w.Name,
-                    State = w.State.ToString(), // Konwersja enuma na string
+                    State = w.State.ToString(), 
                     RoleId = w.RoleId
                 })
                 .ToListAsync();
@@ -122,17 +126,6 @@ namespace WEG.Infrastructure.Services
             return words;
         }
 
-        public async Task UpdateWordStatusAsync(int wordId, WordProgressState newState)
-        {
-            var word = await _context.Words.FindAsync(wordId);
-
-            if (word == null)
-            {
-                throw new ArgumentException("Word with the specified ID does not exist.");
-            }
-
-            word.State = newState;
-            await _context.SaveChangesAsync();
-        }
+    
     }
 }
