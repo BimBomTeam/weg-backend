@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using WEG.Application.Services;
 using WEG.Infrastructure.Dto;
@@ -10,15 +11,23 @@ using WEG.Infrastructure.Services;
 
 namespace WEG_Server.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AiCommunicationController : Controller
     {
-        IAiCommunicationService aiCommunicationService;
+        private readonly IAiCommunicationService aiCommunicationService;
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IDialogService dialogService;
 
-        public AiCommunicationController(IAiCommunicationService aiCommunicationService)
+        public AiCommunicationController(
+            IAiCommunicationService aiCommunicationService,
+            IHttpContextAccessor httpContextAccessor,
+            IDialogService dialogService)
         {
             this.aiCommunicationService = aiCommunicationService;
+            this.httpContextAccessor = httpContextAccessor;
+            this.dialogService = dialogService;
         }
 
         [HttpPost("generate-words")]
@@ -39,7 +48,7 @@ namespace WEG_Server.Controllers
         {
             try
             {
-                var response = await aiCommunicationService.StartDialogAsync(dto.Role, dto.Level, dto.WordsStr);
+                var response = await dialogService.StartDialogAsync(dto);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -52,7 +61,7 @@ namespace WEG_Server.Controllers
         {
             try
             {
-                var response = await aiCommunicationService.ContinueDialogAsync(dto.Messages, dto.MessageStr);
+                var response = await dialogService.ContinueDialogAsync(dto);
                 return Ok(response);
             }
             catch (Exception ex)

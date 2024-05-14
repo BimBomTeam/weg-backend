@@ -29,15 +29,15 @@ namespace WEG.Application.Services
 
             var chatCompletionsOptions = new ChatCompletionsOptions
             {
-                DeploymentName = "gpt-3.5-turbo",
+                DeploymentName = "gpt-4o",
                 Temperature = (float)1,
-                MaxTokens = 800,
-                NucleusSamplingFactor = (float)0.95,
+                MaxTokens = 60,
+                //NucleusSamplingFactor = (float)0.3,
                 FrequencyPenalty = 0,
                 PresencePenalty = 0,
             };
 
-            chatCompletionsOptions.Messages.Add(new ChatRequestUserMessage(prompt));
+            chatCompletionsOptions.Messages.Add(new ChatRequestSystemMessage(prompt));
             var response = await _client.GetChatCompletionsAsync(chatCompletionsOptions);
 
             var list = new List<DialogDto>()
@@ -53,9 +53,9 @@ namespace WEG.Application.Services
             var chatCompletionsOptions = new ChatCompletionsOptions
             {
                 DeploymentName = "gpt-3.5-turbo",
-                Temperature = (float)1,
-                MaxTokens = 800,
-                NucleusSamplingFactor = (float)0.95,
+                Temperature = (float)0.7,
+                MaxTokens = 100,
+                //NucleusSamplingFactor = (float)0.5,
                 FrequencyPenalty = 0,
                 PresencePenalty = 0,
             };

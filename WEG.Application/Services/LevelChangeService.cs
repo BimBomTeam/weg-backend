@@ -1,17 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using WEG.Infrastructure.Dto;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using WEG.Domain.Entities;
 using WEG.Infrastructure.Services;
-using WEG.Application.Claims;
-using Azure;
 
 namespace WEG.Application.Services
 {
