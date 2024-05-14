@@ -11,7 +11,6 @@ namespace WEG.Application.Commands
         {
             GameDay gameDay = new GameDay() { Date = DateOnly.FromDateTime(DateTime.Now) };
             var result = context.Add(gameDay);
-            await SaveChangesAsync();
 
             return gameDay;
         }

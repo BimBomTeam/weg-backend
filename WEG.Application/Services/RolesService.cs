@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using AutoMapper;
+using System.Text.Json;
+using WEG.Application.Commands;
 using WEG.Domain.Entities;
 using WEG.Infrastructure.Commands;
 using WEG.Infrastructure.Dto;
@@ -16,12 +18,14 @@ namespace WEG.Application.Services
         private readonly INpcRoleCommand roleCommand;
         private readonly INpcRolesQuery roleQuery;
         private readonly IRedisCacheService redisService;
+        private readonly IMapper mapper;
 
         public RolesService(IGameDayQuery gameDayQuery,
             IGameDayCommand gameDayCommand,
             IRedisCacheService redisService,
             INpcRoleCommand npcRoleCommand,
-            INpcRolesQuery npcRoleQuery)
+            INpcRolesQuery npcRoleQuery,
+            IMapper mapper)
         {
             rnd = new Random();
             this.gameDayQuery = gameDayQuery;
@@ -29,6 +33,7 @@ namespace WEG.Application.Services
             this.redisService = redisService;
             this.roleCommand = npcRoleCommand;
             this.roleQuery = npcRoleQuery;
+            this.mapper = mapper;
         }
         private async Task<IEnumerable<string>> GetRandomRolesFromPoolAsync(int count = 5)
         {
@@ -67,7 +72,10 @@ namespace WEG.Application.Services
             {
                 var todayGameDay = await gameDayQuery.GetTodayGameDayAsync();
                 if (todayGameDay == null)
+                {
                     todayGameDay = await gameDayCommand.CreateTodayAsync();
+                    await gameDayCommand.SaveChangesAsync();
+                }
 
                 var roles = await GetRandomRolesFromPoolAsync();
                 var dbRoles = new List<NpcRole>();
@@ -114,6 +122,14 @@ namespace WEG.Application.Services
                 result.Add(new RoleDto() { Id = dto.Id, Name = dto.Name });
             }
             return result;
+        }
+        public async Task<RoleDto> GetByIdRole(int roleId)
+        {
+            RoleDto role = mapper.Map<RoleDto>(await redisService.GetRoleAsync(roleId.ToString()));
+            if (role == null)
+                role = mapper.Map<RoleDto>(await roleQuery.GetByIdAsync(roleId));
+
+            return role;
         }
     }
 }

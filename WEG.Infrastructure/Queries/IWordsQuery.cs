@@ -9,6 +9,6 @@ namespace WEG.Infrastructure.Queries
 {
     public interface IWordsQuery : IBaseQuery<Word,int>
     {
-        
+        IEnumerable<Word> GetWordsByDailyProgressAndRole(int progressId, int roleId);
     }
 }

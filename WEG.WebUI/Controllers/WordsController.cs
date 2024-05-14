@@ -5,7 +5,7 @@ using WEG.Infrastructure.Services;
 
 namespace WEG_Server.Controllers
 {
-    //[Authorize] TODO: Unocmment on release
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class WordsController : Controller
