@@ -36,9 +36,7 @@ namespace WEG_Server.Controllers
                 if (tokens == null)
                     return Unauthorized("Invalid credentials");
                 _logger.LogInformation("User logged " + tokens);
-                string? token = await HttpContext.GetTokenAsync(JwtBearerDefaults.AuthenticationScheme, "access_token");
-                var firstLogin = User.Claims.FirstOrDefault(claim => claim.Type == JwtClaims.FirstLogin)?.Value;
-                var login = token.
+                var firstLogin = tokens?.AccessToken?.Claims.FirstOrDefault(claim => claim.Type == "firstLogin")?.Value;
                 return Ok(new
                 {
                     Token = new JwtSecurityTokenHandler().WriteToken(tokens?.AccessToken),
