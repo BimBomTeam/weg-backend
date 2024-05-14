@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WEG.Infrastructure.Dto;
+using WEG.Infrastructure.Services;
 
 namespace WEG_Server.Controllers
 {
@@ -9,7 +10,19 @@ namespace WEG_Server.Controllers
     [Route("api/[controller]")]
     public class WordsController : Controller
     {
+        private readonly IWordService _wordService;
+        public WordsController(IWordService wordService)
+        {
+            _wordService = wordService;
+        }
+
         [HttpPost("get-words/{roleId}")]
+        public async Task<IActionResult> GetWordsByRole(int roleId)
+        {
+            var words = await _wordService.GetWordsByRoleAsync(roleId);
+            return Ok(words);
+        }
+        /*[HttpPost("get-words/{roleId}")]
         public async Task<IActionResult> GetWordsByRole(int roleId)
         {
             var result = new List<WordDto>() 
@@ -21,6 +34,6 @@ namespace WEG_Server.Controllers
                 new WordDto() { Id = 5, Name = "Thats all.", State = "Approved", RoleId = roleId },
             };
             return Ok(result);
-        }
+        }*/
     }
 }
