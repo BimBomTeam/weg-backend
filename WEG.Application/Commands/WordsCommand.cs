@@ -12,14 +12,14 @@ namespace WEG.Application.Commands
     {
         public WordsCommand(ApplicationDbContext context) : base(context) { }
 
-        public async Task ClearWordsForRoleProgress(int progressId, int roleId)
+        public async Task ClearWordsForRoleProgressAsync(int progressId, int roleId)
         {
             await Task.Run(() =>
             {
                 var toRemove = context.Words.Where(word => word.RoleId == roleId
                     && word.DailyProgressId == progressId);
 
-                context.Words.RemoveRange(toRemove);
+                context.RemoveRange(toRemove);
             });
 
         }

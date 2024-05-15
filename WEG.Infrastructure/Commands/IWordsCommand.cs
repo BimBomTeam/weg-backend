@@ -5,7 +5,7 @@ namespace WEG.Infrastructure.Commands
 {
     public interface IWordsCommand : IBaseCommand<Word,int>
     {
-        Task ClearWordsForRoleProgress(int progressId, int roleId);
+        Task ClearWordsForRoleProgressAsync(int progressId, int roleId);
 
     }
 }

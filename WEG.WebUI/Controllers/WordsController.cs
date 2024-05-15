@@ -35,7 +35,7 @@ namespace WEG_Server.Controllers
         {
             try
             {
-                await _wordService.SaveWords(wordsDto);
+                await _wordService.SaveWordsAsync(wordsDto);
                 return Ok();
             }
             catch (Exception ex)

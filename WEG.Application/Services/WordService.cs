@@ -55,7 +55,9 @@ namespace WEG.Infrastructure.Services
                 };
             });
 
-            var addWordsTasks = newWords.AsParallel().Select(word => _wordsCommand.AddAsync(word));
+            var addWordsTasks = newWords.AsParallel().Select(word => 
+            _wordsCommand.AddAsync(word)
+            );
 
             Task.WaitAll(addWordsTasks.ToArray());
             await _wordsCommand.SaveChangesAsync();
@@ -79,11 +81,12 @@ namespace WEG.Infrastructure.Services
                     storedWords = _wordsQuery.GetWordsByDailyProgressAndRole(userProgress.Id, roleId);
                 }
 
-                if (storedWords.Count() > WORDS_COUNT)
+                if (storedWords.Count() != WORDS_COUNT)
                 {
-                    await _wordsCommand.ClearWordsForRoleProgress(userProgress.Id, roleId);
+                    await _wordsCommand.ClearWordsForRoleProgressAsync(userProgress.Id, roleId);
                     await _wordsCommand.SaveChangesAsync();
-                    return await GetWordsByRoleAsync(roleId);
+                    await AddWordsByRoleProgress(roleId, userProgress.Id, level);
+                    storedWords = _wordsQuery.GetWordsByDailyProgressAndRole(userProgress.Id, roleId);
                 }
                 return _mapper.Map<IEnumerable<WordDto>>(storedWords);
             }
@@ -108,7 +111,7 @@ namespace WEG.Infrastructure.Services
                 }
             });
         }
-        public async Task SaveWords(IEnumerable<WordDto> wordsDto)
+        public async Task SaveWordsAsync(IEnumerable<WordDto> wordsDto)
         {
             try
             {
