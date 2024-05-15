@@ -13,26 +13,23 @@ namespace WEG.Application.Services
     public class RolesService : IRolesService
     {
         private readonly Random rnd;
-        private readonly IGameDayQuery gameDayQuery;
-        private readonly IGameDayCommand gameDayCommand;
         private readonly INpcRoleCommand roleCommand;
         private readonly INpcRolesQuery roleQuery;
         private readonly IRedisCacheService redisService;
+        private readonly IGameDayService gameDayService;
         private readonly IMapper mapper;
 
-        public RolesService(IGameDayQuery gameDayQuery,
-            IGameDayCommand gameDayCommand,
-            IRedisCacheService redisService,
+        public RolesService(IRedisCacheService redisService,
             INpcRoleCommand npcRoleCommand,
             INpcRolesQuery npcRoleQuery,
+            IGameDayService gameDayService,
             IMapper mapper)
         {
             rnd = new Random();
-            this.gameDayQuery = gameDayQuery;
-            this.gameDayCommand = gameDayCommand;
             this.redisService = redisService;
             this.roleCommand = npcRoleCommand;
             this.roleQuery = npcRoleQuery;
+            this.gameDayService = gameDayService;
             this.mapper = mapper;
         }
         private async Task<IEnumerable<string>> GetRandomRolesFromPoolAsync(int count = 5)
@@ -70,12 +67,7 @@ namespace WEG.Application.Services
         {
             try
             {
-                var todayGameDay = await gameDayQuery.GetTodayGameDayAsync();
-                if (todayGameDay == null)
-                {
-                    todayGameDay = await gameDayCommand.CreateTodayAsync();
-                    await gameDayCommand.SaveChangesAsync();
-                }
+                var todayGameDay = await gameDayService.GetTodayDay();
 
                 var roles = await GetRandomRolesFromPoolAsync();
                 var dbRoles = new List<NpcRole>();
@@ -83,7 +75,6 @@ namespace WEG.Application.Services
                 {
                     NpcRole role = new NpcRole()
                     {
-                        Day = todayGameDay,
                         DayId = todayGameDay.Id,
                         Name = roleName
                     };

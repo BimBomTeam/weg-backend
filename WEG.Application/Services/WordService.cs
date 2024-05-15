@@ -1,15 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using WEG.Application;
-using WEG.Application.Commands;
-using WEG.Application.Queries;
+﻿using AutoMapper;
+using StackExchange.Redis;
 using WEG.Domain.Entities;
 using WEG.Infrastructure.Commands;
 using WEG.Infrastructure.Dto;
@@ -22,123 +12,124 @@ namespace WEG.Infrastructure.Services
         private const int WORDS_COUNT = 5;
 
         private readonly IAiCommunicationService _aiService;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IGameDayQuery _gameDayQuery;
-        private readonly IGameDayCommand _gameDayCommand;
-        private readonly IDailyProgressStatsCommand _dailyProgressCommand;
-        private readonly IDailyProgressStatsQuery _dailyProgressQuery;
         private readonly IRolesService _rolesService;
         private readonly IWordsCommand _wordsCommand;
         private readonly IWordsQuery _wordsQuery;
+        private readonly IUserDailyProgressService _userDailyProgressService;
+        private readonly IAuthService _authService;
         private readonly IMapper _mapper;
         public WordService(IAiCommunicationService aiService,
-            UserManager<ApplicationUser> userManager,
-            IHttpContextAccessor httpContextAccessor,
-            IGameDayQuery gameDayQuery,
-            IGameDayCommand gameDayCommand,
-            IDailyProgressStatsQuery dailyProgressQuery,
-            IDailyProgressStatsCommand dailyProgressCommand,
             IRolesService rolesService,
             IWordsCommand wordsCommand,
             IWordsQuery wordsQuery,
+            IUserDailyProgressService userDailyProgressService,
+            IAuthService authService,
             IMapper mapper)
         {
             _aiService = aiService;
-            _userManager = userManager;
-            _httpContextAccessor = httpContextAccessor;
-            _gameDayQuery = gameDayQuery;
-            _gameDayCommand = gameDayCommand;
-            _dailyProgressQuery = dailyProgressQuery;
-            _dailyProgressCommand = dailyProgressCommand;
             _rolesService = rolesService;
             _wordsCommand = wordsCommand;
             _wordsQuery = wordsQuery;
+            _userDailyProgressService = userDailyProgressService;
+            _authService = authService;
             _mapper = mapper;
+        }
+
+        public async Task AddWordsByRoleProgress(int roleId, int dailyProgressId, string level)
+        {
+            var role = await _rolesService.GetByIdRole(roleId);
+
+            if (role == null)
+                throw new ArgumentException("No role with this id in database");
+
+            var generatedWords = await _aiService.GenerateWordsAsync(level, role.Name);
+
+            var newWords = generatedWords.Words.Select((word) =>
+            {
+                return new Word()
+                {
+                    Name = word,
+                    State = WordProgressState.InProgress,
+                    DailyProgressId = dailyProgressId,
+                    RoleId = roleId
+                };
+            });
+
+            var addWordsTasks = newWords.AsParallel().Select(word => _wordsCommand.AddAsync(word));
+
+            Task.WaitAll(addWordsTasks.ToArray());
+            await _wordsCommand.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<WordDto>> GetWordsByRoleAsync(int roleId)
         {
             try
             {
-                var role = await _rolesService.GetByIdRole(roleId);
-
-                if (role == null)
-                    throw new ArgumentException("No role with this id in database");
-
-                var todayGameDay = await _gameDayQuery.GetTodayGameDayAsync();
-                if (todayGameDay == null)
-                {
-                    todayGameDay = await _gameDayCommand.CreateTodayAsync();
-                    await _gameDayCommand.SaveChangesAsync();
-                }
-
-                var userEmail = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
-
-                if (userEmail == null)
-                    throw new ArgumentException("Invalid token");
-
-                var user = await _userManager.FindByEmailAsync(userEmail);
-
-                if (user == null)
-                    throw new ArgumentException("Invalid token");
-
-                var userProgress = await _dailyProgressQuery.GetUserDailyProgres(todayGameDay, user.Id);
-                //TODO: Make function to create daily progress
-                if (userProgress == null)
-                {
-                    DailyProgressStats dailyProgress = new DailyProgressStats()
-                    {
-                        DayId = todayGameDay.Id,
-                        UserId = user.Id
-                    };
-                    userProgress = await _dailyProgressCommand.AddAsync(dailyProgress);
-                    await _dailyProgressCommand.SaveChangesAsync();
-                }
-                else
-                {
-                    var storedWords = _wordsQuery.GetWordsByDailyProgressAndRole(userProgress.Id, role.Id);
-
-                    if (storedWords != null && storedWords.Count() > 0)
-                    {
-                        if (storedWords.Count() > WORDS_COUNT)
-                        {
-                            await _wordsCommand.ClearWordsForRoleProgress(userProgress.Id, role.Id);
-                            await _wordsCommand.SaveChangesAsync();
-                        }
-                        else
-                        {
-                            return _mapper.Map<IEnumerable<WordDto>>(storedWords);
-                        }
-                    }
-                }
+                var user = await _authService.GetUserFromRequest();
 
                 string level = user.Level.ToString();
 
-                var generatedWords = await _aiService.GenerateWordsAsync(level, role.Name);
+                var userProgress = await _userDailyProgressService.GetUserTodayProgress(user.Id);
 
-                var newWords = generatedWords.Words.Select((word) =>
+                var storedWords = _wordsQuery.GetWordsByDailyProgressAndRole(userProgress.Id, roleId);
+
+                if (storedWords == null || storedWords.Count() == 0)
                 {
-                    return new Word()
-                    {
-                        Name = word,
-                        State = WordProgressState.InProgress,
-                        DailyProgressId = userProgress.Id,
-                        RoleId = roleId
-                    };
-                });
+                    await AddWordsByRoleProgress(roleId, userProgress.Id, level);
+                    storedWords = _wordsQuery.GetWordsByDailyProgressAndRole(userProgress.Id, roleId);
+                }
 
-                IEnumerable<Task> addWordsTasks =
-                    newWords.AsParallel().Select(word => _wordsCommand.AddAsync(word));
-
-                Task.WaitAll(addWordsTasks.ToArray());
-                await _wordsCommand.SaveChangesAsync();
-
-                return _mapper.Map<IEnumerable<WordDto>>(newWords);
+                if (storedWords.Count() > WORDS_COUNT)
+                {
+                    await _wordsCommand.ClearWordsForRoleProgress(userProgress.Id, roleId);
+                    await _wordsCommand.SaveChangesAsync();
+                    return await GetWordsByRoleAsync(roleId);
+                }
+                return _mapper.Map<IEnumerable<WordDto>>(storedWords);
             }
             catch (Exception ex)
             {
                 throw new Exception($"Error in words generating: {ex.Message}");
+            }
+        }
+        public async Task CheckWordsAsync(IEnumerable<WordDto> words, string text)
+        {
+            await Task<IEnumerable<WordDto>>.Run(() =>
+            {
+                var wordDictionary = words.ToDictionary(w => w.Name, w => w, StringComparer.OrdinalIgnoreCase);
+
+                string[] separators = { " ", ".", ",", "?", "!", ";", ":", "\t", "\n", "\r" };
+                foreach (var word in text.Split(separators, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    if (wordDictionary.TryGetValue(word, out WordDto wordDto))
+                    {
+                        wordDto.State = WordProgressState.Learned.ToString();
+                    }
+                }
+            });
+        }
+        public async Task SaveWords(IEnumerable<WordDto> wordsDto)
+        {
+            try
+            {
+                var user = await _authService.GetUserFromRequest();
+
+                var words = _mapper.Map<IEnumerable<Word>>(wordsDto);
+
+                var userProgress = await _userDailyProgressService.GetUserTodayProgress(user.Id);
+
+                foreach (var word in words)
+                    word.DailyProgressId = userProgress.Id;
+
+                foreach (var word in words)
+                    _wordsCommand.Update(word);
+
+                await _wordsCommand.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
     }

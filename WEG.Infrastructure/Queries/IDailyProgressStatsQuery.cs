@@ -4,6 +4,6 @@ namespace WEG.Infrastructure.Queries
 {
     public interface IDailyProgressStatsQuery : IBaseQuery<DailyProgressStats,int>
     {
-        Task<DailyProgressStats?> GetUserDailyProgres(GameDay day, string userId);
+        Task<DailyProgressStats?> GetUserDailyProgress(GameDay day, string userId);
     }
 }

@@ -4,5 +4,6 @@
     {
         public IEnumerable<DialogDto> Messages { get; set; }
         public string MessageStr { get; set; }
+        public IEnumerable<WordDto> Words { get; set; }
     }
 }

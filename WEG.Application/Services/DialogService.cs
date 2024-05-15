@@ -1,54 +1,64 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
 using WEG.Domain.Entities;
 using WEG.Infrastructure.Dto;
 using WEG.Infrastructure.Dto.Dialog;
-using WEG.Infrastructure.Queries;
 using WEG.Infrastructure.Services;
 
 namespace WEG.Application.Services
 {
     public class DialogService : IDialogService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAiCommunicationService aiCommunicationService;
-        private readonly INpcRolesQuery rolesQuery;
-        public DialogService(UserManager<ApplicationUser> userManager,
-            IHttpContextAccessor httpContextAccessor,
-            IAiCommunicationService aiCommunicationService,
-            INpcRolesQuery rolesQuery)
+        private readonly IWordService wordService;
+        private readonly IAuthService authService;
+        public DialogService(IAiCommunicationService aiCommunicationService,
+            IWordService wordService,
+            IAuthService authService)
         {
-            _userManager = userManager;
-            _httpContextAccessor = httpContextAccessor;
             this.aiCommunicationService = aiCommunicationService;
-            this.rolesQuery = rolesQuery;
+            this.wordService = wordService;
+            this.authService = authService;
         }
         public async Task<IEnumerable<DialogDto>> StartDialogAsync(StartDialogDto dto)
         {
-            var userEmail = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
+            try
+            {
+                var user = await authService.GetUserFromRequest();
 
-            if (userEmail == null)
-                throw new ArgumentException("Token is invalid");
+                var level = user.Level;
 
-            var user = await _userManager.FindByEmailAsync(userEmail);
+                var result = await aiCommunicationService.StartDialogAsync(dto.Role, level.ToString(), dto.WordsStr);
 
-            if (user == null)
-                throw new ArgumentException("Token is invalid");
+                return result;
+            }
+            catch (Exception)
+            {
 
-            var level = user.Level;
-
-            var result = await aiCommunicationService.StartDialogAsync(dto.Role, level.ToString(), dto.WordsStr);
-
-            return result;
+                throw;
+            }
         }
-        public async Task<IEnumerable<DialogDto>> ContinueDialogAsync(ContinueDialogDto dto)
+        public async Task<ContinueDialogResponseDto> ContinueDialogAsync(ContinueDialogDto dto)
         {
             try
             {
-                var response = await aiCommunicationService.ContinueDialogAsync(dto.Messages, dto.MessageStr);
-                return response;
+                var checkWordTask = Task.Run(() =>
+                {
+                    wordService.CheckWordsAsync(dto.Words, dto.MessageStr);
+                });
+                var getDialogResponse = Task.Run(() =>
+                {
+                    var response = aiCommunicationService.ContinueDialogAsync(dto.Messages, dto.MessageStr);
+                    return response;
+                });
+                Task.WaitAll(checkWordTask, getDialogResponse);
+
+                var result = new ContinueDialogResponseDto()
+                {
+                    Words = dto.Words,
+                    Dialog = getDialogResponse.Result
+                };
+                return result;
             }
             catch (Exception)
             {
