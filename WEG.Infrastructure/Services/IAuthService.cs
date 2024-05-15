@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using WEG.Domain.Entities;
 using WEG.Infrastructure.Dto;
 using WEG.Infrastructure.Models;
 
@@ -13,6 +14,6 @@ namespace WEG.Infrastructure.Services
         Task<TokenModel?> LoginAsync(LoginModel model);
         Task LogoutAsync(string token);
         Task<TokensDto> RefreshTokenAsync(TokensDto token);
-
+        Task<ApplicationUser> GetUserFromRequest();
     }
 }

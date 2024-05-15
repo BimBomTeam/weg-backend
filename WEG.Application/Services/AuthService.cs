@@ -16,14 +16,19 @@ using Microsoft.AspNetCore.Http;
 
 namespace WEG.Application.Services
 {
-    public class AuthService : IAuthService
+    public class AuthService123 : IAuthService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
-        public AuthService(UserManager<ApplicationUser> userManager, IConfiguration configuration)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public AuthService123(UserManager<ApplicationUser> userManager, 
+            IConfiguration configuration,
+            IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor; 
         }
 
         public async Task<TokenModel?> LoginAsync(LoginModel model)
@@ -161,6 +166,20 @@ namespace WEG.Application.Services
             var newToken = GenerateToken(authClaims);
             var newRefreshToken = GenerateRefreshToken();
             return new TokensDto() { AccessToken = new JwtSecurityTokenHandler().WriteToken(newToken), RefreshToken = newRefreshToken };
+        }
+        public async Task<ApplicationUser> GetUserFromRequest()
+        {
+            var userEmail = _httpContextAccessor?.HttpContext?.User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (userEmail == null)
+                throw new ArgumentException("Invalid token");
+
+            var user = await _userManager.FindByEmailAsync(userEmail);
+
+            if (user == null)
+                throw new ArgumentException("Invalid token");
+
+            return user;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace WEG.Application.Queries
     {
         public DailyProgressStatsQuery(ApplicationDbContext context) : base(context) { }
 
-        public async Task<DailyProgressStats?> GetUserDailyProgres(GameDay day, string userId)
+        public async Task<DailyProgressStats?> GetUserDailyProgress(GameDay day, string userId)
         {
             var result = await context.DailyProgresses.FirstOrDefaultAsync(dp => dp.UserId == userId && dp.DayId == day.Id);
             return result;
