@@ -1,7 +1,8 @@
 ﻿namespace WEG.Infrastructure.Dto
 {
-    public class DialogRequestDto
+    public class DialogDto
     {
         public string Message { get; set; }
+        public string Role { get; set; }
     }
 }
