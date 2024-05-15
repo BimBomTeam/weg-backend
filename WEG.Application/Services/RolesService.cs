@@ -75,7 +75,6 @@ namespace WEG.Application.Services
                 {
                     NpcRole role = new NpcRole()
                     {
-                        Day = todayGameDay,
                         DayId = todayGameDay.Id,
                         Name = roleName
                     };

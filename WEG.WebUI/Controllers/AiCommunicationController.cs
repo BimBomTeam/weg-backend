@@ -18,16 +18,13 @@ namespace WEG_Server.Controllers
     public class AiCommunicationController : Controller
     {
         private readonly IAiCommunicationService aiCommunicationService;
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IDialogService dialogService;
 
         public AiCommunicationController(
             IAiCommunicationService aiCommunicationService,
-            IHttpContextAccessor httpContextAccessor,
             IDialogService dialogService)
         {
             this.aiCommunicationService = aiCommunicationService;
-            this.httpContextAccessor = httpContextAccessor;
             this.dialogService = dialogService;
         }
 

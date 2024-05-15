@@ -18,10 +18,13 @@ namespace WEG.Application.Services
         }
         public async Task<string> ChangeLevel(ChangeLevelRequestDto request)
         {
-            var userEmail = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
-
-            if (userEmail != null)
+            try
             {
+                var userEmail = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
+
+                if (userEmail == null)
+                    throw new Exception("User access error");
+
                 var user = await _userManager.FindByEmailAsync(userEmail);
 
                 if (!Enum.TryParse<UserLevel>(request.NewLevel, out var newLevel))
@@ -31,12 +34,13 @@ namespace WEG.Application.Services
 
                 user.Level = newLevel;
                 await _userManager.UpdateAsync(user);
-                return "new level "+user.Level;
-
+                return "new level " + user.Level;
             }
-            throw new Exception("User access error");
+            catch (Exception)
+            {
 
-
+                throw;
+            }
         }
     }
 }

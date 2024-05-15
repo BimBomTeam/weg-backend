@@ -9,11 +9,11 @@ using WEG.Application;
 using WEG.Domain.Entities;
 using Hangfire;
 using Hangfire.Redis.StackExchange;
-using WEG_Server.Controllers;
 using WEG.Infrastructure.Queries;
 using WEG.Application.Queries;
 using WEG.Infrastructure.Commands;
 using WEG.Application.Commands;
+using HangfireBasicAuthenticationFilter;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -127,16 +127,22 @@ app.UseAuthentication();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
-app.Use(async (context, next) =>
+app.UseHangfireDashboard("/api/hangfire", new DashboardOptions
 {
-    //RecurringJob.AddOrUpdate("DailyJob",
-    //    () => Console.WriteLine("Zadanie wykonane o: " + DateTime.UtcNow.ToString()),
-    //    Cron.Daily(22, 1)); //Czas UTC (2h do tyłu. U nas będzie 00:01));
-
-    await next();
+    //AppPath = "" //The path for the Back To Site link. Set to null in order to hide the Back To  Site link.
+    DashboardTitle = "Aicademia",
+    Authorization = new[]
+    {
+        new HangfireCustomBasicAuthenticationFilter{
+            User = configuration.GetSection("HangfireSettings:UserName").Value,
+            Pass = configuration.GetSection("HangfireSettings:Password").Value
+        }
+    }
 });
-
 app.MapControllers();
+
+RecurringJob.AddOrUpdate<IRolesService>("ChangeRole",
+    x => x.GenerateNewWordsAsync(),
+    Cron.Daily(22, 01)); //Czas UTC (2h do tyłu. U nas będzie 00:01));
 
 app.Run();
