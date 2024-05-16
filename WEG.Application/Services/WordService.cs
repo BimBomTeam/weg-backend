@@ -55,11 +55,12 @@ namespace WEG.Infrastructure.Services
                 };
             });
 
-            var addWordsTasks = newWords.AsParallel().Select(word => 
-            _wordsCommand.AddAsync(word)
-            );
+            foreach (var word in newWords)
+            {
+                await _wordsCommand.AddAsync(word);
+            }
 
-            Task.WaitAll(addWordsTasks.ToArray());
+            //Task.WaitAll(addWordsTasks.ToArray());
             await _wordsCommand.SaveChangesAsync();
         }
 
