@@ -157,9 +157,9 @@ namespace WEG.Application.Services
                 throw;
             }
         }
-        public async Task<byte[]> GenerateAudio(string input)
+        public async Task<byte[]> GenerateAudio(string input, string voice)
         {
-            var inputDto = new TtsInputDto(input);
+            var inputDto = new TtsInputDto(input, voice);
             var httpClient = new HttpClient();
             var httpRequestMessage = new HttpRequestMessage
             {

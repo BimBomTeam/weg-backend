@@ -86,7 +86,10 @@ namespace WEG_Server.Controllers
         {
             try
             {
-                var response = await aiCommunicationService.GenerateAudio(dto.Input);
+                if (string.IsNullOrEmpty(dto.Voice))
+                    dto.Voice = "alloy";
+
+                var response = await aiCommunicationService.GenerateAudio(dto.Input, dto.Voice);
                 return File(response, "audio/mpeg", "file.mp3");
             }
             catch (Exception ex)

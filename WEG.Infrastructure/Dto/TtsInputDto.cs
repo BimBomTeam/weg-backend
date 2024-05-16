@@ -6,10 +6,13 @@
         public string Input { get; set; }
         public string Voice { get; set; }
         public decimal Speed { get; set; }
-        public TtsInputDto(string input)
+        public TtsInputDto(string input, string voice)
         {
             Model = "tts-1";
-            Voice = "alloy";
+            if (string.IsNullOrEmpty(voice))
+                Voice = "alloy";
+            else
+                Voice = voice;
             Speed = 1;
             Input = input;
         }

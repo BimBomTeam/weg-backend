@@ -10,6 +10,6 @@ namespace WEG.Infrastructure.Services
         Task<IEnumerable<DialogDto>> ContinueDialogAsync(IEnumerable<DialogDto> messages, string messageStr);
         Task<IEnumerable<DialogDto>> StartDialogAsync(string role, string level, string wordsArray);
         Task<BossQuizUnitDto> GenerateBossQuizAsync(string wordtoTranslate);
-        Task<byte[]> GenerateAudio(string input);
+        Task<byte[]> GenerateAudio(string input, string voice);
     }
 }
