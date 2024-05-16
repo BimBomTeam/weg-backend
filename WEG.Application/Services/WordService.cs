@@ -99,12 +99,12 @@ namespace WEG.Infrastructure.Services
         {
             await Task<IEnumerable<WordDto>>.Run(() =>
             {
-                var wordDictionary = words.ToDictionary(w => w.Name, w => w, StringComparer.OrdinalIgnoreCase);
+                var wordDictionary = words.ToDictionary(w => w.Name.ToLower(), w => w, StringComparer.OrdinalIgnoreCase);
 
                 string[] separators = { " ", ".", ",", "?", "!", ";", ":", "\t", "\n", "\r" };
                 foreach (var word in text.Split(separators, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    if (wordDictionary.TryGetValue(word, out WordDto wordDto))
+                    if (wordDictionary.TryGetValue(word.ToLower(), out WordDto wordDto))
                     {
                         wordDto.State = WordProgressState.Learned.ToString();
                     }

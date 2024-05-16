@@ -2,6 +2,8 @@
 using Azure.AI.OpenAI;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using WEG.Application.Claims;
@@ -17,9 +19,11 @@ namespace WEG.Application.Services
     {
         private readonly OpenAIClient _client;
         private readonly PromptService _promptService;
+        private readonly string key;
 
         public AiCommunicationService(IConfiguration config)
         {
+            this.key = config["gpt_api_key"];
             _client = new OpenAIClient(config["gpt_api_key"]);
             _promptService = new PromptService();
         }
@@ -152,7 +156,26 @@ namespace WEG.Application.Services
                 throw new Exception("Bad JSON words format from OpenAi");
                 throw;
             }
+        }
+        public async Task<byte[]> GenerateAudio(string input)
+        {
+            var inputDto = new TtsInputDto(input);
+            var httpClient = new HttpClient();
+            var httpRequestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri("https://api.openai.com/v1/audio/speech"),
+                Headers =
+                {
+                    { HttpRequestHeader.Authorization.ToString(), "Bearer " + key },
+                    { HttpRequestHeader.Accept.ToString(), "application/json" }
+                },
+                Content = JsonContent.Create(inputDto)
+            };
 
+            var response = await httpClient.SendAsync(httpRequestMessage);
+            var byteArray = await response.Content.ReadAsByteArrayAsync();
+            return byteArray;
         }
     }
 }

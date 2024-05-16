@@ -80,5 +80,19 @@ namespace WEG_Server.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost("generate-audio")]
+        public async Task<IActionResult> GenerateAudio([FromBody] GenerateAudioInputDto dto)
+        {
+            try
+            {
+                var response = await aiCommunicationService.GenerateAudio(dto.Input);
+                return File(response, "audio/mpeg", "file.mp3");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
