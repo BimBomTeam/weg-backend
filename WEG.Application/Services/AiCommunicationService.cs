@@ -68,11 +68,11 @@ namespace WEG.Application.Services
             foreach (var message in messages)
             {
                 if (message.Role == DialogRoles.Assistant)
-                    chatHistory.Add(new ChatRequestAssistantMessage(message.Message));
+                    chatCompletionsOptions.Messages.Add(new ChatRequestAssistantMessage(message.Message));
                 else if (message.Role == DialogRoles.User)
-                    chatHistory.Add(new ChatRequestUserMessage(message.Message));
+                    chatCompletionsOptions.Messages.Add(new ChatRequestUserMessage(message.Message));
                 else
-                    chatHistory.Add(new ChatRequestUserMessage(message.Message));
+                    chatCompletionsOptions.Messages.Add(new ChatRequestUserMessage(message.Message));
             }
 
             chatCompletionsOptions.Messages.Add(new ChatRequestUserMessage(messageStr));
