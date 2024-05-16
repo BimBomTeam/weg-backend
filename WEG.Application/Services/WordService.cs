@@ -136,5 +136,14 @@ namespace WEG.Infrastructure.Services
                 throw;
             }
         }
+        public async Task<IEnumerable<WordDto>> GetAllTodayWordsAsync()
+        {
+            var user = await _authService.GetUserFromRequest();
+            var dailyProgress = await _userDailyProgressService.GetUserTodayProgress(user.Id);
+
+            var words = _mapper.Map<IEnumerable<WordDto>>(_wordsQuery.GetWordsByDailyProgress(dailyProgress.Id));
+
+            return words;
+        }
     }
 }

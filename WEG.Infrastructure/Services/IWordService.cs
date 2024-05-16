@@ -7,5 +7,7 @@ namespace WEG.Infrastructure.Services
         Task<IEnumerable<WordDto>> GetWordsByRoleAsync(int roleId);
         Task CheckWordsAsync(IEnumerable<WordDto> words, string text);
         Task SaveWordsAsync(IEnumerable<WordDto> wordsDto);
+        Task<IEnumerable<WordDto>> GetAllTodayWordsAsync();
+
     }
 }

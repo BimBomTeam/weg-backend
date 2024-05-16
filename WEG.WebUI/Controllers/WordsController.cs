@@ -43,5 +43,18 @@ namespace WEG_Server.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet("get-all-today-words")]
+        public async Task<IActionResult> GetAllTodayWords()
+        {
+            try
+            {
+                var words = await _wordService.GetAllTodayWordsAsync();
+                return Ok(words);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
