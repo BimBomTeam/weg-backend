@@ -4,6 +4,7 @@ using WEG.Infrastructure.Dto;
 using System.Security.Claims;
 using WEG.Domain.Entities;
 using WEG.Infrastructure.Services;
+using Microsoft.Extensions.Logging;
 
 namespace WEG.Application.Services
 {
@@ -11,8 +12,10 @@ namespace WEG.Application.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public LevelChangeService(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor)
+        private readonly ILogger<LevelChangeService> _logger;
+        public LevelChangeService(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, ILogger<LevelChangeService> logger)
         {
+            this._logger = logger;
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
         }
@@ -36,9 +39,9 @@ namespace WEG.Application.Services
                 await _userManager.UpdateAsync(user);
                 return "new level " + user.Level;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _logger.LogError("Error change level: " + DateTime.Now + ex);
                 throw;
             }
         }

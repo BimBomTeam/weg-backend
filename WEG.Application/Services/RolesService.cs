@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using WEG.Application.Commands;
 using WEG.Domain.Entities;
@@ -18,13 +19,16 @@ namespace WEG.Application.Services
         private readonly IRedisCacheService redisService;
         private readonly IGameDayService gameDayService;
         private readonly IMapper mapper;
+        private readonly ILogger<RolesService> _logger;
 
         public RolesService(IRedisCacheService redisService,
             INpcRoleCommand npcRoleCommand,
             INpcRolesQuery npcRoleQuery,
             IGameDayService gameDayService,
-            IMapper mapper)
+            IMapper mapper,
+            ILogger<RolesService> logger)
         {
+            this._logger = logger;
             rnd = new Random();
             this.redisService = redisService;
             this.roleCommand = npcRoleCommand;
@@ -58,8 +62,9 @@ namespace WEG.Application.Services
                 return randomElements;
             });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError("Error in get random roles from pool: " + DateTime.Now + ex);
                 throw;
             }
         }
@@ -96,8 +101,9 @@ namespace WEG.Application.Services
                 await redisService.ClearAllRolesAsync();
                 await redisService.SaveRolesAsync(rolesRedisDtos);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError("Error in save changes async: " + DateTime.Now + ex);
                 throw;
             }
         }

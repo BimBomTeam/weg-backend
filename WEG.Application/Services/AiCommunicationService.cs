@@ -2,6 +2,7 @@
 using Azure.AI.OpenAI;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Net.Http.Json;
@@ -20,9 +21,11 @@ namespace WEG.Application.Services
         private readonly OpenAIClient _client;
         private readonly PromptService _promptService;
         private readonly string key;
+        private readonly ILogger<AiCommunicationService> _logger;
 
-        public AiCommunicationService(IConfiguration config)
+        public AiCommunicationService(IConfiguration config, ILogger<AiCommunicationService> logger)
         {
+            this._logger = logger;
             this.key = config["gpt_api_key"];
             _client = new OpenAIClient(config["gpt_api_key"]);
             _promptService = new PromptService();
@@ -118,8 +121,9 @@ namespace WEG.Application.Services
                     throw new Exception("Bad JSON words format from OpenAi");
                 return wordsArray;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError("Bad JSON words format from OpenAi : " + DateTime.Now + ex);
                 throw new Exception("Bad JSON words format from OpenAi");
                 throw;
             }
@@ -151,8 +155,9 @@ namespace WEG.Application.Services
                     throw new Exception("Bad JSON words format from OpenAi");
                 return answers;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError("Bad JSON words format from OpenAi : " + DateTime.Now + ex);
                 throw new Exception("Bad JSON words format from OpenAi");
                 throw;
             }

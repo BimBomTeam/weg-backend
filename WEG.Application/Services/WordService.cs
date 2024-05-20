@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
+using WEG.Application.Services;
 using WEG.Domain.Entities;
 using WEG.Infrastructure.Commands;
 using WEG.Infrastructure.Dto;
@@ -18,14 +20,17 @@ namespace WEG.Infrastructure.Services
         private readonly IUserDailyProgressService _userDailyProgressService;
         private readonly IAuthService _authService;
         private readonly IMapper _mapper;
+        private readonly ILogger<WordService> _logger;
         public WordService(IAiCommunicationService aiService,
             IRolesService rolesService,
             IWordsCommand wordsCommand,
             IWordsQuery wordsQuery,
             IUserDailyProgressService userDailyProgressService,
             IAuthService authService,
-            IMapper mapper)
+            IMapper mapper,
+            ILogger<WordService> logger)
         {
+            this._logger = logger;
             _aiService = aiService;
             _rolesService = rolesService;
             _wordsCommand = wordsCommand;
@@ -93,6 +98,7 @@ namespace WEG.Infrastructure.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError("Error in words generating: " + DateTime.Now + ex);
                 throw new Exception($"Error in words generating: {ex.Message}");
             }
         }
@@ -130,9 +136,9 @@ namespace WEG.Infrastructure.Services
 
                 await _wordsCommand.SaveChangesAsync();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _logger.LogError("Error in save word:" + DateTime.Now + ex);
                 throw;
             }
         }

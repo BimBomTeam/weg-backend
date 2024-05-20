@@ -13,6 +13,7 @@ using WEG.Infrastructure.Services;
 using WEG.Domain.Entities;
 using WEG.Infrastructure.Dto;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace WEG.Application.Services
 {
@@ -21,14 +22,18 @@ namespace WEG.Application.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<AuthService123> _logger;
 
         public AuthService123(UserManager<ApplicationUser> userManager, 
             IConfiguration configuration,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<AuthService123> logger
+            )
         {
             _userManager = userManager;
             _configuration = configuration;
-            _httpContextAccessor = httpContextAccessor; 
+            _httpContextAccessor = httpContextAccessor;
+            this._logger = logger;
         }
 
         public async Task<TokenModel?> LoginAsync(LoginModel model)
@@ -137,12 +142,14 @@ namespace WEG.Application.Services
             {
                 tokenHandler.ValidateToken(token, validationParameters, out validatedToken);
             }
-            catch (SecurityTokenException)
+            catch (SecurityTokenException ex)
             {
+                _logger.LogError(" " + DateTime.Now + ex);
                 return false;
             }
             catch (Exception e)
             {
+                _logger.LogError(" " + DateTime.Now + e);
                 throw;
             }
             return validatedToken != null;

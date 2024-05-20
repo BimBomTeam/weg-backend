@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using WEG.Infrastructure.Dto.Roles;
 using WEG.Infrastructure.Services;
@@ -8,9 +9,11 @@ namespace WEG.Application.Services
     public class RedisCacheService : IRedisCacheService
     {
         private readonly IDatabaseAsync _db;
+        private readonly ILogger<RedisCacheService> _logger;
 
-        public RedisCacheService(IConfiguration conf)
+        public RedisCacheService(IConfiguration conf, ILogger<RedisCacheService> logger)
         {
+            this._logger = logger;
             var connection = ConnectionMultiplexer.Connect(conf.GetConnectionString("HangfireConnection"));
             _db = connection.GetDatabase();
         }
@@ -46,8 +49,9 @@ namespace WEG.Application.Services
                 long count = await _db.SetLengthAsync("roles:keys");
                 return count < 1;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError("Error is empty: " + DateTime.Now + ex);
                 return true;
             }
         }

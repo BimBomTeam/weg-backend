@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using WEG.Domain.Entities;
 using WEG.Infrastructure.Dto;
 using WEG.Infrastructure.Dto.Dialog;
@@ -12,10 +13,14 @@ namespace WEG.Application.Services
         private readonly IAiCommunicationService aiCommunicationService;
         private readonly IWordService wordService;
         private readonly IAuthService authService;
+        private readonly ILogger<DialogService> _logger;
         public DialogService(IAiCommunicationService aiCommunicationService,
             IWordService wordService,
-            IAuthService authService)
+            IAuthService authService,
+            ILogger<DialogService> logger
+            )
         {
+            this._logger = logger;
             this.aiCommunicationService = aiCommunicationService;
             this.wordService = wordService;
             this.authService = authService;
@@ -32,9 +37,9 @@ namespace WEG.Application.Services
 
                 return result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _logger.LogError("Error start dialog: " + DateTime.Now + ex);
                 throw;
             }
         }
@@ -60,9 +65,9 @@ namespace WEG.Application.Services
                 };
                 return result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _logger.LogError("Error continue dialog: " + DateTime.Now + ex);
                 throw;
             }
         }
